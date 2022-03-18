@@ -34,7 +34,7 @@ variable "backtrack_window" {
 }
 
 variable "backup_retention_period" {
-  description = "Optional) The days to retain backups for. Default 1"
+  description = "(Optional) The days to retain backups for. Default 1"
   type        = number
   default     = 1
 }
@@ -100,7 +100,7 @@ variable "enabled_cloudwatch_logs_exports" {
 }
 
 variable "engine" {
-  description = "Optional) The name of the database engine to be used for this DB cluster. Defaults to aurora. Valid Values: aurora, aurora-mysql, aurora-postgresql"
+  description = "(Optional) The name of the database engine to be used for this DB cluster. Defaults to aurora. Valid Values: aurora, aurora-mysql, aurora-postgresql"
   type        = string
   default     = "aurora"
 }
@@ -112,7 +112,7 @@ variable "engine_mode" {
 }
 
 variable "engine_version" {
-  description = "(Optional) The database engine version. Updating this argument results in an outage.The actual engine version used is returned in the attribute engine_version_actual."
+  description = "(Optional) The database engine version. Updating this argument results in an outage. The actual engine version used is returned in the attribute engine_version_actual."
   type        = string
   default     = null
 }

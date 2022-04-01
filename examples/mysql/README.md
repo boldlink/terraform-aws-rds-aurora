@@ -9,7 +9,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.5.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.8.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.1.2 |
 
 ## Modules
@@ -17,8 +17,7 @@ No requirements.
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_kms_key"></a> [kms\_key](#module\_kms\_key) | boldlink/kms-key/aws | 1.0.0 |
-| <a name="module_rds_cluster"></a> [rds\_cluster](#module\_rds\_cluster) | ./../ | n/a |
-| <a name="module_rds_subnet_group"></a> [rds\_subnet\_group](#module\_rds\_subnet\_group) | boldlink/db-subnet-group/aws | 1.0.0 |
+| <a name="module_rds_cluster"></a> [rds\_cluster](#module\_rds\_cluster) | ./../../ | n/a |
 
 ## Resources
 

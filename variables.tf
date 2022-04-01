@@ -102,13 +102,13 @@ variable "enabled_cloudwatch_logs_exports" {
 variable "engine" {
   description = "(Optional) The name of the database engine to be used for this DB cluster. Defaults to aurora. Valid Values: aurora, aurora-mysql, aurora-postgresql"
   type        = string
-  default     = "aurora"
+  default     = null
 }
 
 variable "engine_mode" {
   description = "(Optional) The database engine mode. Valid values: global (only valid for Aurora MySQL 1.21 and earlier), multimaster, parallelquery, provisioned, serverless. Defaults to: provisioned. "
   type        = string
-  default     = "provisioned"
+  default     = null
 }
 
 variable "engine_version" {
@@ -162,13 +162,13 @@ variable "port" {
 variable "preferred_backup_window" {
   description = "(Optional) The daily time range during which automated backups are created if automated backups are enabled using the BackupRetentionPeriod parameter.Time in UTC. Default: A 30-minute window selected at random from an 8-hour block of time per region"
   type        = string
-  default     = "04:00-09:00"
+  default     = "00:00-01:00"
 }
 
 variable "preferred_maintenance_window" {
   description = "(Optional) The weekly time range during which system maintenance can occur, in (UTC) e.g., wed:04:00-wed:04:30"
   type        = string
-  default     = "wed:04:00-wed:04:30"
+  default     = "Sun:02:00-Sun:04:00"
 }
 
 variable "replication_source_identifier" {
@@ -259,6 +259,101 @@ variable "scaling_configuration" {
     timeout_action           = string
   }))
   default = []
+}
+
+# Cluster Instance
+variable "instance_count" {
+  description = "Number of DocumentDB cluster instances to be created."
+  type        = number
+  default     = 2
+}
+
+variable "instance_class" {
+  description = "(Required) The instance class to use. For details on CPU and memory, see Scaling Aurora DB Instances. Aurora uses db.* instance classes/types."
+  type        = string
+  default     = ""
+}
+
+variable "publicly_accessible" {
+  description = "(Optional) Bool to control if instance is publicly accessible. Default false."
+  type        = bool
+  default     = false
+}
+
+variable "monitoring_role_arn" {
+  description = "(Optional) The ARN for the IAM role that permits RDS to send enhanced monitoring metrics to CloudWatch Logs."
+  type        = string
+  default     = null
+}
+
+variable "monitoring_interval" {
+  description = "(Optional) The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60."
+  type        = number
+  default     = 0
+}
+
+variable "promotion_tier" {
+  description = "(Optional) Default 0. Failover Priority setting on instance level. The reader who has lower tier has higher priority to get promoted to writer."
+  type        = number
+  default     = 0
+}
+
+variable "auto_minor_version_upgrade" {
+  description = "(Optional) Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window. Default true."
+  type        = bool
+  default     = true
+}
+
+variable "availability_zone" {
+  description = "(Optional, Computed, Forces new resource) The EC2 Availability Zone that the DB instance is created in."
+  type        = string
+  default     = null
+}
+
+variable "performance_insights_enabled" {
+  description = "(Optional) Specifies whether Performance Insights is enabled or not."
+  type        = bool
+  default     = false
+}
+
+variable "performance_insights_kms_key_id" {
+  description = "(Optional) ARN for the KMS key to encrypt Performance Insights data. When specifying performance_insights_kms_key_id, performance_insights_enabled needs to be set to true."
+  type        = string
+  default     = null
+}
+
+variable "performance_insights_retention_period" {
+  description = "(Optional) Amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years). When specifying performance_insights_retention_period, performance_insights_enabled needs to be set to true. Defaults to '7'."
+  type        = number
+  default     = 7
+}
+
+variable "ca_cert_identifier" {
+  description = "(Optional) The identifier of the CA certificate for the DB instance."
+  type        = string
+  default     = null
+}
+variable "instance_timeouts" {
+  description = "aws_rds_cluster_instance provides the following Timeouts configuration options: create, update, delete"
+  type = list(object({
+    create = string
+    update = string
+    delete = string
+  }))
+  default = []
+}
+
+# Subnet Group
+variable "subnet_ids" {
+  description = "(Required) A list of VPC subnet IDs."
+  type        = list(string)
+  default     = []
+}
+
+variable "create_db_subnet_group" {
+  description = "Whether to create the Subnet Group or not"
+  type        = bool
+  default     = true
 }
 
 # Security Group

@@ -10,7 +10,7 @@ resource "aws_rds_cluster" "this" {
   database_name                       = var.database_name
   db_cluster_parameter_group_name     = var.db_cluster_parameter_group_name
   db_instance_parameter_group_name    = var.db_instance_parameter_group_name
-  db_subnet_group_name                = var.db_subnet_group_name
+  db_subnet_group_name                = var.create_db_subnet_group ? aws_db_subnet_group.this[0].id : var.db_subnet_group_name
   deletion_protection                 = var.deletion_protection
   enable_http_endpoint                = var.enable_http_endpoint
   enabled_cloudwatch_logs_exports     = var.enabled_cloudwatch_logs_exports
@@ -22,7 +22,7 @@ resource "aws_rds_cluster" "this" {
   enable_global_write_forwarding      = var.enable_global_write_forwarding
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
   iam_roles                           = var.iam_roles
-  kms_key_id                          = var.kms_key_id
+  kms_key_id                          = var.storage_encrypted ? var.kms_key_id : null
   master_password                     = var.master_password
   master_username                     = var.master_username
   port                                = var.port
@@ -86,6 +86,64 @@ resource "aws_rds_cluster" "this" {
   }
 }
 
+# Subnet Group
+resource "aws_db_subnet_group" "this" {
+  count       = var.create_db_subnet_group ? 1 : 0
+  name        = "${var.cluster_identifier}-subnetgroup"
+  subnet_ids  = var.subnet_ids
+  description = "${var.cluster_identifier} RDS Aurora Subnet Group"
+  tags = merge(
+    {
+      "Name"        = "${var.cluster_identifier}-subnetgroup"
+      "Environment" = var.environment
+    },
+    var.other_tags,
+  )
+}
+
+# Cluster Instance
+resource "aws_rds_cluster_instance" "this" {
+  count                                 = var.instance_count
+  identifier                            = "${var.cluster_identifier}-instance-${count.index}"
+  identifier_prefix                     = var.cluster_identifier_prefix
+  cluster_identifier                    = aws_rds_cluster.this.id
+  engine                                = var.engine
+  engine_version                        = var.engine_version
+  instance_class                        = var.instance_class
+  publicly_accessible                   = var.publicly_accessible
+  db_subnet_group_name                  = var.create_db_subnet_group ? aws_db_subnet_group.this[0].id : var.db_subnet_group_name
+  db_parameter_group_name               = var.db_cluster_parameter_group_name
+  apply_immediately                     = var.apply_immediately
+  monitoring_role_arn                   = var.monitoring_role_arn
+  monitoring_interval                   = var.monitoring_interval
+  promotion_tier                        = var.promotion_tier
+  availability_zone                     = var.availability_zone
+  preferred_maintenance_window          = var.preferred_maintenance_window
+  auto_minor_version_upgrade            = var.auto_minor_version_upgrade
+  performance_insights_enabled          = var.performance_insights_enabled
+  performance_insights_kms_key_id       = var.performance_insights_enabled ? var.performance_insights_kms_key_id : null
+  performance_insights_retention_period = var.performance_insights_enabled ? var.performance_insights_retention_period : null
+  copy_tags_to_snapshot                 = var.copy_tags_to_snapshot
+  ca_cert_identifier                    = var.ca_cert_identifier
+
+  dynamic "timeouts" {
+    for_each = var.instance_timeouts
+    content {
+      create = lookup(timeouts.value, "create", "90m")
+      update = lookup(timeouts.value, "update", "90m")
+      delete = lookup(timeouts.value, "delete", "90m")
+    }
+  }
+
+  tags = merge(
+    {
+      "Environment" = var.environment
+    },
+    var.other_tags,
+  )
+}
+
+# Security group
 resource "aws_security_group" "this" {
   count       = var.create_security_group ? 1 : 0
   name        = var.sg_name

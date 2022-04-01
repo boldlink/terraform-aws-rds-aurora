@@ -6,6 +6,7 @@ Examples available [here](https://github.com/boldlink/terraform-aws-rds-cluster/
 ## Documentation
 
 [AWS DocumentDB Cluster Documentation ](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.html)
+
 [Terraform RDS Cluster Documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster)
 
 

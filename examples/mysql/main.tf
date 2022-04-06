@@ -22,6 +22,7 @@ resource "random_string" "master_username" {
   length  = 6
   special = false
   upper   = false
+  number  = false
 }
 
 resource "random_password" "master_password" {

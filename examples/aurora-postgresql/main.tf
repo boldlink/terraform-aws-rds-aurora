@@ -1,21 +1,10 @@
 
+# ##########################
+#  Aurora-mysql example
+# ##########################
 locals {
   cluster_name = "sample-cluster-aurora"
   environment  = "test"
-}
-
-data "aws_vpc" "default" {
-  filter {
-    name   = "tag:Name"
-    values = ["default"]
-  }
-}
-
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
 }
 
 resource "random_string" "master_username" {
@@ -42,11 +31,11 @@ module "kms_key" {
 
 module "rds_cluster" {
   source                              = "./../../"
-  instance_count                      = 3
-  engine                              = "aurora-mysql"
-  engine_version                      = "5.7"
+  instance_count                      = 1
+  engine                              = "aurora-postgresql"
+  engine_version                      = "11.12"
   engine_mode                         = "provisioned"
-  instance_class                      = "db.r5.large"
+  instance_class                      = "db.r5.2xlarge"
   subnet_ids                          = data.aws_subnets.default.ids
   cluster_identifier                  = local.cluster_name
   master_username                     = random_string.master_username.result
@@ -55,13 +44,24 @@ module "rds_cluster" {
   storage_encrypted                   = true
   kms_key_id                          = join("", module.kms_key.*.arn)
   vpc_id                              = data.aws_vpc.default.id
-  enabled_cloudwatch_logs_exports     = ["audit", "error", "general", "slowquery"]
+  enabled_cloudwatch_logs_exports     = ["postgresql"]
   create_security_group               = true
   sg_name                             = "${local.cluster_name}-securitygroup-${uuid()}"
   skip_final_snapshot                 = true
   environment                         = local.environment
   iam_database_authentication_enabled = true
   deletion_protection                 = false
+  create_cluster_endpoint             = true
+  create_monitoring_role              = true
+  monitoring_interval                 = 30
+  assume_role_policy                  = data.aws_iam_policy_document.monitoring.json
+  policy_arn                          = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+  create_cluster_parameter_group      = true
+  family                              = "aurora-postgresql11"
+  enable_autoscaling                  = true
+  scalable_dimension                  = "rds:cluster:ReadReplicaCount"
+  policy_type                         = "TargetTrackingScaling"
+  predefined_metric_type              = "RDSReaderAverageCPUUtilization"
 }
 
 output "rds_cluster_output" {

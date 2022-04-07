@@ -202,7 +202,6 @@ variable "storage_encrypted" {
 }
 
 #Tags
-
 variable "environment" {
   type        = string
   description = "The environment this resource is being deployed to"
@@ -228,6 +227,7 @@ variable "s3_import" {
   }))
   default = []
 }
+
 # Restore to point in time
 variable "restore_to_point_in_time" {
   description = "(Optional) Nested attribute for point in time restore. "
@@ -333,6 +333,7 @@ variable "ca_cert_identifier" {
   type        = string
   default     = null
 }
+
 variable "instance_timeouts" {
   description = "aws_rds_cluster_instance provides the following Timeouts configuration options: create, update, delete"
   type = list(object({
@@ -349,6 +350,7 @@ variable "db_parameter_group_name" {
   default     = ""
 
 }
+
 # Subnet Group
 variable "subnet_ids" {
   description = "(Required) A list of VPC subnet IDs."
@@ -431,6 +433,7 @@ variable "create_cluster_parameter_group" {
   type        = bool
   default     = false
 }
+
 variable "name_prefix" {
   description = "(Optional, Forces new resource) Creates a unique name beginning with the specified prefix. Conflicts with name."
   type        = string
@@ -448,6 +451,7 @@ variable "description" {
   type        = string
   default     = "Managed by Terraform."
 }
+
 variable "cluster_parameters" {
   description = "(Optional) A list of DB parameters to apply. Note that parameters may differ from a family to an other."
   type = list(object({
@@ -457,6 +461,7 @@ variable "cluster_parameters" {
   }))
   default = []
 }
+
 # Enhanced Monitoring
 variable "create_monitoring_role" {
   description = "Whether to create monitoring role or not"
@@ -532,6 +537,7 @@ variable "predefined_metric_type" {
   type        = string
   default     = ""
 }
+
 variable "target_value" {
   description = "(Required) The target value for the metric."
   type        = number
@@ -549,4 +555,3 @@ variable "scale_out_cooldown" {
   type        = number
   default     = 300
 }
-

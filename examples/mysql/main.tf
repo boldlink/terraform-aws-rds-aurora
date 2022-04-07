@@ -1,6 +1,6 @@
 
 locals {
-  cluster_name = "sample-rds-cluster"
+  cluster_name = "sample-cluster-aurora"
   environment  = "test"
 }
 
@@ -22,20 +22,13 @@ resource "random_string" "master_username" {
   length  = 6
   special = false
   upper   = false
+  number  = false
 }
 
 resource "random_password" "master_password" {
   length  = 16
   special = false
   upper   = false
-}
-
-module "rds_subnet_group" {
-  source      = "boldlink/db-subnet-group/aws"
-  version     = "1.0.0"
-  name        = "${local.cluster_name}-subnet-group-${uuid()}"
-  subnet_ids  = data.aws_subnets.default.ids
-  environment = local.environment
 }
 
 module "kms_key" {
@@ -48,24 +41,27 @@ module "kms_key" {
 }
 
 module "rds_cluster" {
-  source                              = "./../"
-  cluster_identifier                  = "${local.cluster_name}-${uuid()}"
+  source                              = "./../../"
+  instance_count                      = 3
+  engine                              = "aurora-mysql"
+  engine_version                      = "5.7"
+  engine_mode                         = "provisioned"
+  instance_class                      = "db.r5.large"
+  subnet_ids                          = data.aws_subnets.default.ids
+  cluster_identifier                  = local.cluster_name
   master_username                     = random_string.master_username.result
   master_password                     = random_password.master_password.result
   final_snapshot_identifier           = "${local.cluster_name}-snapshot-${uuid()}"
-  preferred_backup_window             = "02:00-03:00"
-  preferred_maintenance_window        = "sun:06:00-sun:09:00"
   storage_encrypted                   = true
   kms_key_id                          = join("", module.kms_key.*.arn)
   vpc_id                              = data.aws_vpc.default.id
-  db_subnet_group_name                = join("", module.rds_subnet_group.*.id)
   enabled_cloudwatch_logs_exports     = ["audit", "error", "general", "slowquery"]
   create_security_group               = true
   sg_name                             = "${local.cluster_name}-securitygroup-${uuid()}"
   skip_final_snapshot                 = true
   environment                         = local.environment
   iam_database_authentication_enabled = true
-  deletion_protection                 = true
+  deletion_protection                 = false
 }
 
 output "rds_cluster_output" {

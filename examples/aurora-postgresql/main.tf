@@ -1,6 +1,6 @@
 
 # ##########################
-#  Aurora-mysql example
+#  Aurora-postgresql example
 # ##########################
 locals {
   cluster_name = "sample-cluster-aurora"

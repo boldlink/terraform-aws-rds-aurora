@@ -67,7 +67,7 @@ resource "aws_rds_cluster" "this" {
 
   # scaling_configuration configuration is only valid when engine_mode is set to serverless.
   dynamic "scaling_configuration" {
-    for_each = var.scaling_configuration
+    for_each = var.engine_mode != "serverless" ? var.scaling_configuration : null
     content {
       auto_pause               = lookup(scaling_configuration.value, "auto_pause", null)
       max_capacity             = lookup(scaling_configuration.value, "max_capacity", null)
@@ -159,24 +159,24 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_security_group_rule" "ingress" {
-  count                    = var.create_security_group ? 1 : 0
-  type                     = var.ingress_type
+  for_each                 = var.create_security_group ? var.ingress_rules : null
+  type                     = "ingress"
   description              = "Allow inbound traffic from existing Security Groups"
-  from_port                = var.port
-  to_port                  = var.port
-  protocol                 = var.ingress_protocol
+  from_port                = lookup(each.value, "from_port", null)
+  to_port                  = lookup(each.value, "to_port", null)
+  protocol                 = "tcp"
   source_security_group_id = join("", aws_security_group.this.*.id)
   security_group_id        = join("", aws_security_group.this.*.id)
 }
 
 resource "aws_security_group_rule" "egress" {
-  count             = var.create_security_group ? 1 : 0
-  type              = var.egress_type
+  for_each          = var.create_security_group ? var.egress_rules : null
+  type              = "egress"
   description       = "Allow all egress traffic"
-  from_port         = var.from_port
-  to_port           = var.to_port
-  protocol          = var.egress_protocol
-  cidr_blocks       = [var.cidr_blocks]
+  from_port         = lookup(each.value, "from_port", null)
+  to_port           = lookup(each.value, "to_port", null)
+  protocol          = "tcp"
+  cidr_blocks       = lookup(each.value, "cidr_blocks", null)
   security_group_id = join("", aws_security_group.this.*.id)
 }
 

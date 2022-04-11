@@ -58,7 +58,6 @@ No modules.
 | <a name="input_backtrack_window"></a> [backtrack\_window](#input\_backtrack\_window) | (Optional) The target backtrack window, in seconds. Only available for aurora and aurora-mysql engines currently. To disable backtracking, set this value to 0. Defaults to 0. Must be between 0 and 259200 (72 hours) | `number` | `0` | no |
 | <a name="input_backup_retention_period"></a> [backup\_retention\_period](#input\_backup\_retention\_period) | (Optional) The days to retain backups for. Default 1 | `number` | `1` | no |
 | <a name="input_ca_cert_identifier"></a> [ca\_cert\_identifier](#input\_ca\_cert\_identifier) | (Optional) The identifier of the CA certificate for the DB instance. | `string` | `null` | no |
-| <a name="input_cidr_blocks"></a> [cidr\_blocks](#input\_cidr\_blocks) | List of CIDR blocks | `string` | `"0.0.0.0/0"` | no |
 | <a name="input_cluster_identifier"></a> [cluster\_identifier](#input\_cluster\_identifier) | (Optional, Forces new resources) The cluster identifier. If omitted, Terraform will assign a random, unique identifier. | `string` | `null` | no |
 | <a name="input_cluster_identifier_prefix"></a> [cluster\_identifier\_prefix](#input\_cluster\_identifier\_prefix) | (Optional, Forces new resource) Creates a unique cluster identifier beginning with the specified prefix. Conflicts with cluster\_identifier. | `string` | `null` | no |
 | <a name="input_cluster_parameters"></a> [cluster\_parameters](#input\_cluster\_parameters) | (Optional) A list of DB parameters to apply. Note that parameters may differ from a family to an other. | <pre>list(object({<br>    name         = string<br>    value        = string<br>    apply_method = string<br>  }))</pre> | `[]` | no |
@@ -76,8 +75,7 @@ No modules.
 | <a name="input_db_subnet_group_name"></a> [db\_subnet\_group\_name](#input\_db\_subnet\_group\_name) | (Optional) A DB subnet group to associate with this DB instance. NOTE: This must match the db\_subnet\_group\_name specified on every aws\_rds\_cluster\_instance in the cluster. | `string` | `null` | no |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | (Optional) If the DB instance should have deletion protection enabled. The database can't be deleted when this value is set to true. The default is false. | `bool` | `false` | no |
 | <a name="input_description"></a> [description](#input\_description) | (Optional) The description of the DB cluster parameter group. Defaults to `Managed by Terraform`. | `string` | `"Managed by Terraform."` | no |
-| <a name="input_egress_protocol"></a> [egress\_protocol](#input\_egress\_protocol) | (Required) Protocol. If not icmp, icmpv6, tcp, udp, or all use the protocol number | `string` | `"-1"` | no |
-| <a name="input_egress_type"></a> [egress\_type](#input\_egress\_type) | (Required) Type of rule being created. Valid options are ingress (inbound) or egress (outbound) | `string` | `"egress"` | no |
+| <a name="input_egress_rules"></a> [egress\_rules](#input\_egress\_rules) | (Optional) Egress rules to add to the security group | `any` | `[]` | no |
 | <a name="input_enable_autoscaling"></a> [enable\_autoscaling](#input\_enable\_autoscaling) | Whether to enable autoscaling or not | `bool` | `false` | no |
 | <a name="input_enable_global_write_forwarding"></a> [enable\_global\_write\_forwarding](#input\_enable\_global\_write\_forwarding) | (Optional) Whether cluster should forward writes to an associated global cluster. | `bool` | `false` | no |
 | <a name="input_enable_http_endpoint"></a> [enable\_http\_endpoint](#input\_enable\_http\_endpoint) | (Optional) Enable HTTP endpoint (data API). Only valid when engine\_mode is set to serverless. | `bool` | `false` | no |
@@ -88,12 +86,10 @@ No modules.
 | <a name="input_environment"></a> [environment](#input\_environment) | The environment this resource is being deployed to | `string` | `null` | no |
 | <a name="input_family"></a> [family](#input\_family) | (Required) The family of the DB cluster parameter group. | `string` | `""` | no |
 | <a name="input_final_snapshot_identifier"></a> [final\_snapshot\_identifier](#input\_final\_snapshot\_identifier) | (Optional) The name of your final DB snapshot when this DB cluster is deleted. If omitted, no final snapshot will be made. | `string` | `null` | no |
-| <a name="input_from_port"></a> [from\_port](#input\_from\_port) | (Required) Start port (or ICMP type number if protocol is 'icmp' or 'icmpv6') | `number` | `0` | no |
 | <a name="input_global_cluster_identifier"></a> [global\_cluster\_identifier](#input\_global\_cluster\_identifier) | (Optional) The global cluster identifier specified on aws\_rds\_global\_cluster. | `string` | `null` | no |
 | <a name="input_iam_database_authentication_enabled"></a> [iam\_database\_authentication\_enabled](#input\_iam\_database\_authentication\_enabled) | (Optional) Specifies whether or not mappings of AWS Identity and Access Management (IAM) accounts to database accounts is enabled. | `bool` | `false` | no |
 | <a name="input_iam_roles"></a> [iam\_roles](#input\_iam\_roles) | (Optional) A List of ARNs for the IAM roles to associate to the RDS Cluster. | `list(string)` | `[]` | no |
-| <a name="input_ingress_protocol"></a> [ingress\_protocol](#input\_ingress\_protocol) | (Required) Protocol. If not icmp, icmpv6, tcp, udp, or all use the protocol number | `string` | `"tcp"` | no |
-| <a name="input_ingress_type"></a> [ingress\_type](#input\_ingress\_type) | (Required) Type of rule being created. Valid options are ingress (inbound) or egress (outbound) | `string` | `"ingress"` | no |
+| <a name="input_ingress_rules"></a> [ingress\_rules](#input\_ingress\_rules) | (Optional) Ingress rules to add to the security group | `any` | `[]` | no |
 | <a name="input_instance_class"></a> [instance\_class](#input\_instance\_class) | (Required) The instance class to use. For details on CPU and memory, see Scaling Aurora DB Instances. Aurora uses db.* instance classes/types. | `string` | `""` | no |
 | <a name="input_instance_count"></a> [instance\_count](#input\_instance\_count) | Number of DocumentDB cluster instances to be created. | `number` | `2` | no |
 | <a name="input_instance_timeouts"></a> [instance\_timeouts](#input\_instance\_timeouts) | aws\_rds\_cluster\_instance provides the following Timeouts configuration options: create, update, delete | <pre>list(object({<br>    create = string<br>    update = string<br>    delete = string<br>  }))</pre> | `[]` | no |
@@ -133,7 +129,6 @@ No modules.
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | (Required) A list of VPC subnet IDs. | `list(string)` | `[]` | no |
 | <a name="input_target_value"></a> [target\_value](#input\_target\_value) | (Required) The target value for the metric. | `number` | `75` | no |
 | <a name="input_timeouts"></a> [timeouts](#input\_timeouts) | aws\_rds\_cluster provides the following Timeouts configuration options: create, update, delete | <pre>list(object({<br>    create = string<br>    update = string<br>    delete = string<br>  }))</pre> | `[]` | no |
-| <a name="input_to_port"></a> [to\_port](#input\_to\_port) | (Required) End port (or ICMP code if protocol is 'icmp') | `number` | `0` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | (Optional, Forces new resource) VPC ID | `string` | `null` | no |
 
 ## Outputs

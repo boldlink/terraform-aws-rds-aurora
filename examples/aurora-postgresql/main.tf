@@ -30,22 +30,36 @@ module "kms_key" {
 }
 
 module "rds_cluster" {
-  source                              = "./../../"
-  instance_count                      = 1
-  engine                              = "aurora-postgresql"
-  engine_version                      = "11.12"
-  engine_mode                         = "provisioned"
-  instance_class                      = "db.r5.2xlarge"
-  subnet_ids                          = data.aws_subnets.default.ids
-  cluster_identifier                  = local.cluster_name
-  master_username                     = random_string.master_username.result
-  master_password                     = random_password.master_password.result
-  final_snapshot_identifier           = "${local.cluster_name}-snapshot-${uuid()}"
-  storage_encrypted                   = true
-  kms_key_id                          = join("", module.kms_key.*.arn)
-  vpc_id                              = data.aws_vpc.default.id
-  enabled_cloudwatch_logs_exports     = ["postgresql"]
-  create_security_group               = true
+  source                          = "./../../"
+  instance_count                  = 1
+  engine                          = "aurora-postgresql"
+  engine_version                  = "11.12"
+  engine_mode                     = "provisioned"
+  instance_class                  = "db.r5.2xlarge"
+  subnet_ids                      = data.aws_subnets.default.ids
+  cluster_identifier              = local.cluster_name
+  master_username                 = random_string.master_username.result
+  master_password                 = random_password.master_password.result
+  final_snapshot_identifier       = "${local.cluster_name}-snapshot-${uuid()}"
+  storage_encrypted               = true
+  kms_key_id                      = join("", module.kms_key.*.arn)
+  vpc_id                          = data.aws_vpc.default.id
+  enabled_cloudwatch_logs_exports = ["postgresql"]
+  create_security_group           = true
+  ingress_rules = {
+    default = {
+      from_port = 5432
+      to_port   = 5432
+    }
+
+  }
+  egress_rules = {
+    default = {
+      from_port   = 0
+      to_port     = 0
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
   sg_name                             = "${local.cluster_name}-securitygroup-${uuid()}"
   skip_final_snapshot                 = true
   environment                         = local.environment

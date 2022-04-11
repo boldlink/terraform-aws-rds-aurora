@@ -384,48 +384,6 @@ variable "create_security_group" {
   type        = bool
 }
 
-variable "ingress_protocol" {
-  description = "(Required) Protocol. If not icmp, icmpv6, tcp, udp, or all use the protocol number"
-  type        = string
-  default     = "tcp"
-}
-
-variable "ingress_type" {
-  description = " (Required) Type of rule being created. Valid options are ingress (inbound) or egress (outbound)"
-  type        = string
-  default     = "ingress"
-}
-
-variable "egress_protocol" {
-  description = "(Required) Protocol. If not icmp, icmpv6, tcp, udp, or all use the protocol number"
-  type        = string
-  default     = "-1"
-}
-
-variable "egress_type" {
-  description = " (Required) Type of rule being created. Valid options are ingress (inbound) or egress (outbound)"
-  type        = string
-  default     = "egress"
-}
-
-variable "cidr_blocks" {
-  description = "List of CIDR blocks"
-  default     = "0.0.0.0/0"
-  type        = string
-}
-
-variable "from_port" {
-  description = "(Required) Start port (or ICMP type number if protocol is 'icmp' or 'icmpv6')"
-  type        = number
-  default     = 0
-}
-
-variable "to_port" {
-  description = "(Required) End port (or ICMP code if protocol is 'icmp')"
-  type        = number
-  default     = 0
-}
-
 # Cluster Parameter Group
 
 variable "create_cluster_parameter_group" {
@@ -554,4 +512,16 @@ variable "scale_out_cooldown" {
   description = "(Optional) The amount of time, in seconds, after a scale out activity completes before another scale out activity can start."
   type        = number
   default     = 300
+}
+
+
+variable "ingress_rules" {
+  description = "(Optional) Ingress rules to add to the security group"
+  type        = any
+  default     = []
+}
+variable "egress_rules" {
+  description = "(Optional) Egress rules to add to the security group"
+  type        = any
+  default     = []
 }

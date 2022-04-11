@@ -159,7 +159,7 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_security_group_rule" "ingress" {
-  for_each                 = var.create_security_group ? var.ingress_rules : null
+  for_each                 = var.create_security_group ? var.ingress_rules : {}
   type                     = "ingress"
   description              = "Allow inbound traffic from existing Security Groups"
   from_port                = lookup(each.value, "from_port", null)
@@ -170,7 +170,7 @@ resource "aws_security_group_rule" "ingress" {
 }
 
 resource "aws_security_group_rule" "egress" {
-  for_each          = var.create_security_group ? var.egress_rules : null
+  for_each          = var.create_security_group ? var.egress_rules : {}
   type              = "egress"
   description       = "Allow all egress traffic"
   from_port         = lookup(each.value, "from_port", null)

@@ -202,7 +202,6 @@ variable "storage_encrypted" {
 }
 
 #Tags
-
 variable "environment" {
   type        = string
   description = "The environment this resource is being deployed to"
@@ -228,6 +227,7 @@ variable "s3_import" {
   }))
   default = []
 }
+
 # Restore to point in time
 variable "restore_to_point_in_time" {
   description = "(Optional) Nested attribute for point in time restore. "
@@ -333,6 +333,7 @@ variable "ca_cert_identifier" {
   type        = string
   default     = null
 }
+
 variable "instance_timeouts" {
   description = "aws_rds_cluster_instance provides the following Timeouts configuration options: create, update, delete"
   type = list(object({
@@ -341,6 +342,13 @@ variable "instance_timeouts" {
     delete = string
   }))
   default = []
+}
+
+variable "db_parameter_group_name" {
+  description = "(Optional) The name of the DB parameter group to associate with this instance."
+  type        = string
+  default     = ""
+
 }
 
 # Subnet Group
@@ -376,44 +384,144 @@ variable "create_security_group" {
   type        = bool
 }
 
-variable "ingress_protocol" {
-  description = "(Required) Protocol. If not icmp, icmpv6, tcp, udp, or all use the protocol number"
-  type        = string
-  default     = "tcp"
+# Cluster Parameter Group
+
+variable "create_cluster_parameter_group" {
+  description = "Whether to create a cluster_parameter_group or not"
+  type        = bool
+  default     = false
 }
 
-variable "ingress_type" {
-  description = " (Required) Type of rule being created. Valid options are ingress (inbound) or egress (outbound)"
+variable "name_prefix" {
+  description = "(Optional, Forces new resource) Creates a unique name beginning with the specified prefix. Conflicts with name."
   type        = string
-  default     = "ingress"
+  default     = null
 }
 
-variable "egress_protocol" {
-  description = "(Required) Protocol. If not icmp, icmpv6, tcp, udp, or all use the protocol number"
+variable "family" {
+  description = "(Required) The family of the DB cluster parameter group."
   type        = string
-  default     = "-1"
+  default     = ""
 }
 
-variable "egress_type" {
-  description = " (Required) Type of rule being created. Valid options are ingress (inbound) or egress (outbound)"
+variable "description" {
+  description = "(Optional) The description of the DB cluster parameter group. Defaults to `Managed by Terraform`."
   type        = string
-  default     = "egress"
+  default     = "Managed by Terraform."
 }
 
-variable "cidr_blocks" {
-  description = "List of CIDR blocks"
-  default     = "0.0.0.0/0"
-  type        = string
+variable "cluster_parameters" {
+  description = "(Optional) A list of DB parameters to apply. Note that parameters may differ from a family to an other."
+  type = list(object({
+    name         = string
+    value        = string
+    apply_method = string
+  }))
+  default = []
 }
 
-variable "from_port" {
-  description = "(Required) Start port (or ICMP type number if protocol is 'icmp' or 'icmpv6')"
+# Enhanced Monitoring
+variable "create_monitoring_role" {
+  description = "Whether to create monitoring role or not"
+  type        = bool
+  default     = false
+}
+
+variable "assume_role_policy" {
+  description = "(Required) Policy that grants an entity permission to assume the role."
+  type        = string
+  default     = ""
+}
+
+variable "policy_arn" {
+  description = " (Required) - The ARN of the policy you want to apply"
+  type        = string
+  default     = ""
+}
+
+# Cluster Endpoint
+
+variable "create_cluster_endpoint" {
+  description = "Whether to create a cluster endpoint or not"
+  type        = bool
+  default     = false
+}
+
+variable "custom_endpoint_type" {
+  description = "(Required) The type of the endpoint. One of: READER , ANY ."
+  type        = string
+  default     = "READER"
+}
+
+# Autoscaling
+variable "enable_autoscaling" {
+  description = "Whether to enable autoscaling or not"
+  type        = bool
+  default     = false
+}
+
+variable "max_capacity" {
+  description = "Maximum number of replicas"
   type        = number
-  default     = 0
+  default     = 1
 }
 
-variable "to_port" {
-  description = "(Required) End port (or ICMP code if protocol is 'icmp')"
+variable "min_capacity" {
+  description = "Minimum number of replicas"
   type        = number
-  default     = 0
+  default     = 1
+}
+
+variable "scalable_dimension" {
+  description = "(Required) The scalable dimension of the scalable target."
+  type        = string
+  default     = ""
+}
+
+variable "service_namespace" {
+  description = "(Required) The AWS service namespace of the scalable target."
+  type        = string
+  default     = "rds"
+}
+
+variable "policy_type" {
+  description = "Optional) The policy type. Valid values are StepScaling and TargetTrackingScaling. Defaults to StepScaling."
+  type        = string
+  default     = "StepScaling"
+}
+
+variable "predefined_metric_type" {
+  description = "The type of metric to scale on"
+  type        = string
+  default     = ""
+}
+
+variable "target_value" {
+  description = "(Required) The target value for the metric."
+  type        = number
+  default     = 75
+}
+
+variable "scale_in_cooldown" {
+  description = " (Optional) The amount of time, in seconds, after a scale in activity completes before another scale in activity can start."
+  type        = number
+  default     = 300
+}
+
+variable "scale_out_cooldown" {
+  description = "(Optional) The amount of time, in seconds, after a scale out activity completes before another scale out activity can start."
+  type        = number
+  default     = 300
+}
+
+
+variable "ingress_rules" {
+  description = "(Optional) Ingress rules to add to the security group"
+  type        = any
+  default     = []
+}
+variable "egress_rules" {
+  description = "(Optional) Egress rules to add to the security group"
+  type        = any
+  default     = []
 }

@@ -1,3 +1,4 @@
+
 resource "aws_rds_cluster" "this" {
   allow_major_version_upgrade         = var.allow_major_version_upgrade
   apply_immediately                   = var.apply_immediately
@@ -9,7 +10,7 @@ resource "aws_rds_cluster" "this" {
   copy_tags_to_snapshot               = var.copy_tags_to_snapshot
   database_name                       = var.database_name
   db_cluster_parameter_group_name     = var.db_cluster_parameter_group_name
-  db_instance_parameter_group_name    = var.db_instance_parameter_group_name
+  db_instance_parameter_group_name    = var.allow_major_version_upgrade ? var.db_instance_parameter_group_name : null
   db_subnet_group_name                = var.create_db_subnet_group ? aws_db_subnet_group.this[0].id : var.db_subnet_group_name
   deletion_protection                 = var.deletion_protection
   enable_http_endpoint                = var.enable_http_endpoint
@@ -43,7 +44,7 @@ resource "aws_rds_cluster" "this" {
 
   # This will not recreate the resource if the S3 object changes in some way. It's only used to initialize the database. This only works currently with the aurora engine.
   dynamic "s3_import" {
-    for_each = var.s3_import
+    for_each = var.engine != "aurora" ?  [] : [var.s3_import]
     content {
       bucket_name           = lookup(s3_import.value, "bucket_name", null)
       bucket_prefix         = lookup(s3_import.value, "bucket_prefix", null)
@@ -66,7 +67,7 @@ resource "aws_rds_cluster" "this" {
 
   # scaling_configuration configuration is only valid when engine_mode is set to serverless.
   dynamic "scaling_configuration" {
-    for_each = var.scaling_configuration
+    for_each = var.engine_mode == "serverless" ? [var.scaling_configuration] : []
     content {
       auto_pause               = lookup(scaling_configuration.value, "auto_pause", null)
       max_capacity             = lookup(scaling_configuration.value, "max_capacity", null)
@@ -112,9 +113,9 @@ resource "aws_rds_cluster_instance" "this" {
   instance_class                        = var.instance_class
   publicly_accessible                   = var.publicly_accessible
   db_subnet_group_name                  = var.create_db_subnet_group ? aws_db_subnet_group.this[0].id : var.db_subnet_group_name
-  db_parameter_group_name               = var.db_cluster_parameter_group_name
+  db_parameter_group_name               = var.db_parameter_group_name
   apply_immediately                     = var.apply_immediately
-  monitoring_role_arn                   = var.monitoring_role_arn
+  monitoring_role_arn                   = var.create_monitoring_role && var.monitoring_interval > 0 ? aws_iam_role.this[0].arn : var.monitoring_role_arn
   monitoring_interval                   = var.monitoring_interval
   promotion_tier                        = var.promotion_tier
   availability_zone                     = var.availability_zone
@@ -158,23 +159,114 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_security_group_rule" "ingress" {
-  count                    = var.create_security_group ? 1 : 0
-  type                     = var.ingress_type
+  for_each                 = var.create_security_group ? var.ingress_rules : {}
+  type                     = "ingress"
   description              = "Allow inbound traffic from existing Security Groups"
-  from_port                = var.port
-  to_port                  = var.port
-  protocol                 = var.ingress_protocol
+  from_port                = lookup(each.value, "from_port", null)
+  to_port                  = lookup(each.value, "to_port", null)
+  protocol                 = "tcp"
   source_security_group_id = join("", aws_security_group.this.*.id)
   security_group_id        = join("", aws_security_group.this.*.id)
 }
 
 resource "aws_security_group_rule" "egress" {
-  count             = var.create_security_group ? 1 : 0
-  type              = var.egress_type
+  for_each          = var.create_security_group ? var.egress_rules : {}
+  type              = "egress"
   description       = "Allow all egress traffic"
-  from_port         = var.from_port
-  to_port           = var.to_port
-  protocol          = var.egress_protocol
-  cidr_blocks       = [var.cidr_blocks]
+  from_port         = lookup(each.value, "from_port", null)
+  to_port           = lookup(each.value, "to_port", null)
+  protocol          = "tcp"
+  cidr_blocks       = lookup(each.value, "cidr_blocks", null)
   security_group_id = join("", aws_security_group.this.*.id)
+}
+
+# Parameter Group
+resource "aws_rds_cluster_parameter_group" "this" {
+  count       = var.create_cluster_parameter_group ? 1 : 0
+  name        = var.name_prefix == null ? "${var.cluster_identifier}-parameter-group" : null
+  name_prefix = var.name_prefix
+  family      = var.family
+  description = var.description
+  dynamic "parameter" {
+    for_each = var.cluster_parameters
+    content {
+      name         = parameter.value.name
+      value        = parameter.value.value
+      apply_method = lookup(parameter.value, "apply_method", "immediate")
+    }
+  }
+  tags = merge(
+    {
+      "Environment" = var.environment
+    },
+    var.other_tags,
+  )
+}
+
+# Enhanced monitoring
+resource "aws_iam_role" "this" {
+  count              = var.create_monitoring_role && var.instance_count > 0 ? 1 : 0
+  name               = "${var.cluster_identifier}-enhanced-monitoring-role"
+  assume_role_policy = var.assume_role_policy
+  description        = "enhanced monitoring iam role for rds cluster instance."
+  tags = merge(
+    {
+      "Environment" = var.environment
+    },
+    var.other_tags,
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "this" {
+  count      = var.create_monitoring_role && var.instance_count > 0 ? 1 : 0
+  role       = aws_iam_role.this[0].name
+  policy_arn = var.policy_arn
+}
+
+# Cluster Endpoint
+resource "aws_rds_cluster_endpoint" "this" {
+  count                       = var.create_cluster_endpoint ? 1 : 0
+  cluster_identifier          = aws_rds_cluster.this.id
+  cluster_endpoint_identifier = lower(var.cluster_identifier)
+  custom_endpoint_type        = var.custom_endpoint_type
+  static_members              = var.instance_count > 0 ? [aws_rds_cluster_instance.this[0].id] : []
+  tags = merge(
+    {
+      "Environment" = var.environment
+    },
+    var.other_tags,
+  )
+}
+
+# Autoscaling
+resource "aws_appautoscaling_target" "replicas" {
+  count              = var.enable_autoscaling ? 1 : 0
+  service_namespace  = var.service_namespace
+  scalable_dimension = var.scalable_dimension
+  resource_id        = "cluster:${aws_rds_cluster.this.id}"
+  min_capacity       = var.min_capacity
+  max_capacity       = var.max_capacity
+}
+
+resource "aws_appautoscaling_policy" "this" {
+  count              = var.enable_autoscaling ? 1 : 0
+  name               = "${var.cluster_identifier}-auto-scaling"
+  service_namespace  = aws_appautoscaling_target.replicas[0].service_namespace
+  scalable_dimension = aws_appautoscaling_target.replicas[0].scalable_dimension
+  resource_id        = aws_appautoscaling_target.replicas[0].resource_id
+  policy_type        = var.policy_type
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = var.predefined_metric_type
+    }
+
+    target_value       = var.target_value
+    scale_in_cooldown  = var.scale_in_cooldown
+    scale_out_cooldown = var.scale_out_cooldown
+  }
+  depends_on = [
+    aws_rds_cluster.this,
+    aws_rds_cluster_instance.this,
+  ]
 }

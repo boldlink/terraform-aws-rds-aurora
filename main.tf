@@ -44,7 +44,7 @@ resource "aws_rds_cluster" "this" {
 
   # This will not recreate the resource if the S3 object changes in some way. It's only used to initialize the database. This only works currently with the aurora engine.
   dynamic "s3_import" {
-    for_each = var.s3_import
+    for_each = var.engine != "aurora" ?  [] : [var.s3_import]
     content {
       bucket_name           = lookup(s3_import.value, "bucket_name", null)
       bucket_prefix         = lookup(s3_import.value, "bucket_prefix", null)
@@ -67,7 +67,7 @@ resource "aws_rds_cluster" "this" {
 
   # scaling_configuration configuration is only valid when engine_mode is set to serverless.
   dynamic "scaling_configuration" {
-    for_each = var.engine_mode != "serverless" ? var.scaling_configuration : null
+    for_each = var.engine_mode == "serverless" ? [var.scaling_configuration] : []
     content {
       auto_pause               = lookup(scaling_configuration.value, "auto_pause", null)
       max_capacity             = lookup(scaling_configuration.value, "max_capacity", null)

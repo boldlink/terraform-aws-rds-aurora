@@ -25,7 +25,7 @@ module "kms_key" {
   version             = "1.0.0"
   description         = "A test kms key for RDS cluster"
   name                = "${local.cluster_name}-key"
-  alias_name          = "alias/rds-key-alias"
+  alias_name          = "alias/rds-postgres-key-alias"
   enable_key_rotation = true
 }
 
@@ -34,6 +34,7 @@ module "rds_cluster" {
   instance_count                  = 1
   engine                          = "aurora-postgresql"
   engine_version                  = "11.12"
+  port                            = 5432
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.2xlarge"
   subnet_ids                      = data.aws_subnets.default.ids
@@ -60,7 +61,7 @@ module "rds_cluster" {
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
-  sg_name                             = "${local.cluster_name}-securitygroup-${uuid()}"
+  
   skip_final_snapshot                 = true
   environment                         = local.environment
   iam_database_authentication_enabled = true

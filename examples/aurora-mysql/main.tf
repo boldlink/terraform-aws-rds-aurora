@@ -35,6 +35,7 @@ module "rds_cluster" {
   instance_count                  = 1
   engine                          = "aurora-mysql"
   engine_version                  = "5.7"
+  port                            = 3306
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.2xlarge"
   subnet_ids                      = data.aws_subnets.default.ids
@@ -62,7 +63,6 @@ module "rds_cluster" {
     }
   }
 
-  sg_name                             = "${local.cluster_name}-securitygroup-${uuid()}"
   skip_final_snapshot                 = true
   environment                         = local.environment
   iam_database_authentication_enabled = true

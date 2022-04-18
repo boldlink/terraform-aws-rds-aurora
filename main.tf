@@ -8,12 +8,12 @@ resource "aws_rds_cluster" "this" {
   cluster_identifier_prefix           = var.cluster_identifier_prefix
   cluster_identifier                  = var.cluster_identifier
   copy_tags_to_snapshot               = var.copy_tags_to_snapshot
-  database_name                       = var.database_name
+  database_name                       = var.primary_cluster ? var.database_name : null
   db_cluster_parameter_group_name     = var.db_cluster_parameter_group_name
   db_instance_parameter_group_name    = var.allow_major_version_upgrade ? var.db_instance_parameter_group_name : null
   db_subnet_group_name                = var.create_db_subnet_group ? aws_db_subnet_group.this[0].id : var.db_subnet_group_name
   deletion_protection                 = var.deletion_protection
-  enable_http_endpoint                = var.enable_http_endpoint
+  enable_http_endpoint                = var.engine_mode == "serverless" ? var.enable_http_endpoint : false
   enabled_cloudwatch_logs_exports     = var.enabled_cloudwatch_logs_exports
   engine                              = var.engine
   engine_mode                         = var.engine_mode
@@ -24,8 +24,8 @@ resource "aws_rds_cluster" "this" {
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
   iam_roles                           = var.iam_roles
   kms_key_id                          = var.storage_encrypted ? var.kms_key_id : null
-  master_password                     = var.master_password
-  master_username                     = var.master_username
+  master_password                     = var.primary_cluster ? var.master_password : null
+  master_username                     = var.primary_cluster ? var.master_username : null
   port                                = var.port
   preferred_backup_window             = var.preferred_backup_window
   preferred_maintenance_window        = var.preferred_maintenance_window
@@ -42,15 +42,15 @@ resource "aws_rds_cluster" "this" {
   )
   vpc_security_group_ids = [join("", aws_security_group.this.*.id)]
 
-  # This will not recreate the resource if the S3 object changes in some way. It's only used to initialize the database. This only works currently with the aurora engine.
+  # RDS Aurora Serverless does not support loading data from S3, so its not possible to directly use engine_mode set to serverless with s3_import.
   dynamic "s3_import" {
-    for_each = var.engine != "aurora" ?  [] : [var.s3_import]
+    for_each = var.engine_mode != "serverless" && var.s3_import != null ? [var.s3_import] : []
     content {
-      bucket_name           = lookup(s3_import.value, "bucket_name", null)
+      bucket_name           = s3_import.value.bucket_name
       bucket_prefix         = lookup(s3_import.value, "bucket_prefix", null)
-      ingestion_role        = lookup(s3_import.value, "ingestion_role", null)
-      source_engine         = lookup(s3_import.value, "source_engine", null)
-      source_engine_version = lookup(s3_import.value, "source_engine_version", null)
+      ingestion_role        = s3_import.value.ingestion_role
+      source_engine         = "mysql"
+      source_engine_version = s3_import.value.source_engine_version
     }
   }
 
@@ -58,11 +58,10 @@ resource "aws_rds_cluster" "this" {
   dynamic "restore_to_point_in_time" {
     for_each = var.restore_to_point_in_time
     content {
-      source_cluster_identifier  = lookup(restore_to_point_in_time.value, "source_cluster_identifier", "example")
+      source_cluster_identifier  = lookup(restore_to_point_in_time.value, "source_cluster_identifier")
       restore_type               = lookup(restore_to_point_in_time.value, "source_cluster_identifier", "copy-on-write")
       use_latest_restorable_time = lookup(restore_to_point_in_time.value, "source_cluster_identifier", true)
     }
-
   }
 
   # scaling_configuration configuration is only valid when engine_mode is set to serverless.
@@ -85,21 +84,6 @@ resource "aws_rds_cluster" "this" {
       delete = lookup(timeouts.value, "delete", "120m")
     }
   }
-}
-
-# Subnet Group
-resource "aws_db_subnet_group" "this" {
-  count       = var.create_db_subnet_group ? 1 : 0
-  name        = "${var.cluster_identifier}-subnetgroup"
-  subnet_ids  = var.subnet_ids
-  description = "${var.cluster_identifier} RDS Aurora Subnet Group"
-  tags = merge(
-    {
-      "Name"        = "${var.cluster_identifier}-subnetgroup"
-      "Environment" = var.environment
-    },
-    var.other_tags,
-  )
 }
 
 # Cluster Instance
@@ -144,10 +128,25 @@ resource "aws_rds_cluster_instance" "this" {
   )
 }
 
+# Subnet Group
+resource "aws_db_subnet_group" "this" {
+  count       = var.create_db_subnet_group ? 1 : 0
+  name        = "${var.cluster_identifier}-subnetgroup"
+  subnet_ids  = var.subnet_ids
+  description = "${var.cluster_identifier} RDS Aurora Subnet Group"
+  tags = merge(
+    {
+      "Name"        = "${var.cluster_identifier}-subnetgroup"
+      "Environment" = var.environment
+    },
+    var.other_tags,
+  )
+}
+
 # Security group
 resource "aws_security_group" "this" {
   count       = var.create_security_group ? 1 : 0
-  name        = var.sg_name
+  name        = "${var.cluster_identifier}-security-group"
   vpc_id      = var.vpc_id
   description = "RDS cluster Security Group"
   tags = merge(
@@ -156,28 +155,6 @@ resource "aws_security_group" "this" {
     },
     var.other_tags,
   )
-}
-
-resource "aws_security_group_rule" "ingress" {
-  for_each                 = var.create_security_group ? var.ingress_rules : {}
-  type                     = "ingress"
-  description              = "Allow inbound traffic from existing Security Groups"
-  from_port                = lookup(each.value, "from_port", null)
-  to_port                  = lookup(each.value, "to_port", null)
-  protocol                 = "tcp"
-  source_security_group_id = join("", aws_security_group.this.*.id)
-  security_group_id        = join("", aws_security_group.this.*.id)
-}
-
-resource "aws_security_group_rule" "egress" {
-  for_each          = var.create_security_group ? var.egress_rules : {}
-  type              = "egress"
-  description       = "Allow all egress traffic"
-  from_port         = lookup(each.value, "from_port", null)
-  to_port           = lookup(each.value, "to_port", null)
-  protocol          = "tcp"
-  cidr_blocks       = lookup(each.value, "cidr_blocks", null)
-  security_group_id = join("", aws_security_group.this.*.id)
 }
 
 # Parameter Group
@@ -236,6 +213,29 @@ resource "aws_rds_cluster_endpoint" "this" {
     },
     var.other_tags,
   )
+}
+
+# Security Group
+resource "aws_security_group_rule" "ingress" {
+  for_each                 = var.ingress_rules
+  type                     = "ingress"
+  description              = "Allow inbound traffic from existing Security Groups"
+  from_port                = lookup(each.value, "from_port")
+  to_port                  = lookup(each.value, "to_port")
+  protocol                 = "tcp"
+  source_security_group_id = join("", aws_security_group.this.*.id)
+  security_group_id        = join("", aws_security_group.this.*.id)
+}
+
+resource "aws_security_group_rule" "egress" {
+  for_each          = var.egress_rules
+  type              = "egress"
+  description       = "Allow all egress traffic"
+  from_port         = lookup(each.value, "from_port")
+  to_port           = lookup(each.value, "to_port")
+  protocol          = "tcp"
+  cidr_blocks       = lookup(each.value, "cidr_blocks", null)
+  security_group_id = join("", aws_security_group.this.*.id)
 }
 
 # Autoscaling

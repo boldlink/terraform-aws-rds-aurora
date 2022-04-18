@@ -1,12 +1,25 @@
 
+variable "primary_cluster" {
+  description = "Confirms if this will be a primary cluster: If not, `database_name`, `master_username` and `master_password` are not required for `secondary` clusters with a `global_cluster_identifier` defined. "
+  type        = bool
+  default     = true
+}
+variable "database_name" {
+  description = "(Optional) Name for an automatically created database on cluster creation."
+  type        = string
+  default     = null
+}
+
 variable "master_password" {
   description = "(Required unless a snapshot_identifier or replication_source_identifier is provided or unless a global_cluster_identifier is provided when the cluster is the 'secondary' cluster of a global database) Password for the master DB user."
   type        = string
+  default     = null
 }
 
 variable "master_username" {
   description = "(Required unless a snapshot_identifier or replication_source_identifier is provided or unless a global_cluster_identifier is provided when the cluster is the 'secondary' cluster of a global database) Username for the master DB user. "
   type        = string
+  default     = null
 }
 
 variable "allow_major_version_upgrade" {
@@ -55,12 +68,6 @@ variable "copy_tags_to_snapshot" {
   description = "(Optional, boolean) Copy all Cluster tags to snapshots. Default is false."
   type        = bool
   default     = false
-}
-
-variable "database_name" {
-  description = "(Optional) Name for an automatically created database on cluster creation."
-  type        = string
-  default     = null
 }
 
 variable "db_cluster_parameter_group_name" {
@@ -156,7 +163,7 @@ variable "kms_key_id" {
 variable "port" {
   description = "(Optional) The port on which the DB accepts connections"
   type        = number
-  default     = 3306
+  default     = null
 }
 
 variable "preferred_backup_window" {
@@ -218,14 +225,8 @@ variable "other_tags" {
 
 variable "s3_import" {
   description = " Requires that the S3 bucket be in the same region as the RDS cluster you're trying to create."
-  type = list(object({
-    source_engine         = string
-    source_engine_version = string
-    bucket_name           = string
-    bucket_prefix         = string
-    ingestion_role        = string
-  }))
-  default = []
+  type        = map(string)
+  default     = null
 }
 
 # Restore to point in time
@@ -251,14 +252,8 @@ variable "timeouts" {
 
 variable "scaling_configuration" {
   description = "(Optional) Nested attribute with scaling properties. Only valid when engine_mode is set to serverless"
-  type = list(object({
-    auto_pause               = bool
-    max_capacity             = number
-    min_capacity             = number
-    seconds_until_auto_pause = number
-    timeout_action           = string
-  }))
-  default = []
+  type        = map(string)
+  default     = {}
 }
 
 # Cluster Instance
@@ -368,12 +363,6 @@ variable "create_db_subnet_group" {
 
 variable "vpc_id" {
   description = "(Optional, Forces new resource) VPC ID"
-  type        = string
-  default     = null
-}
-
-variable "sg_name" {
-  description = " (Optional, Forces new resource) Name of the security group. If omitted, Terraform will assign a random, unique name."
   type        = string
   default     = null
 }
@@ -518,10 +507,10 @@ variable "scale_out_cooldown" {
 variable "ingress_rules" {
   description = "(Optional) Ingress rules to add to the security group"
   type        = any
-  default     = []
+  default     = {}
 }
 variable "egress_rules" {
   description = "(Optional) Egress rules to add to the security group"
   type        = any
-  default     = []
+  default     = {}
 }

@@ -44,7 +44,6 @@ resource "aws_rds_global_cluster" "example" {
   engine                    = "aurora"
   engine_version            = "5.6.mysql_aurora.1.22.2"
   database_name             = "random_db"
-  #storage_encrypted         = true
 }
 
 module "primary_cluster" {
@@ -61,8 +60,6 @@ module "primary_cluster" {
   master_username           = random_string.master_username.result
   master_password           = random_password.master_password.result
   final_snapshot_identifier = "${local.cluster_name}-snapshot-${uuid()}"
-  #storage_encrypted               = true
-  #kms_key_id                      = join("", module.kms_key.*.arn)
   vpc_id                          = data.aws_vpc.default.id
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
   create_security_group           = true

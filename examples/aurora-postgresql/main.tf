@@ -61,7 +61,7 @@ module "rds_cluster" {
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
-  
+
   skip_final_snapshot                 = true
   environment                         = local.environment
   iam_database_authentication_enabled = true

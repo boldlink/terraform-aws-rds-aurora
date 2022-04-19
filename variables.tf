@@ -367,6 +367,17 @@ variable "vpc_id" {
   default     = null
 }
 
+variable "ingress_rules" {
+  description = "(Optional) Ingress rules to add to the security group"
+  type        = any
+  default     = {}
+}
+variable "egress_rules" {
+  description = "(Optional) Egress rules to add to the security group"
+  type        = any
+  default     = {}
+}
+
 variable "create_security_group" {
   description = "Whether to create a Security Group for RDS cluster."
   default     = false
@@ -501,16 +512,4 @@ variable "scale_out_cooldown" {
   description = "(Optional) The amount of time, in seconds, after a scale out activity completes before another scale out activity can start."
   type        = number
   default     = 300
-}
-
-
-variable "ingress_rules" {
-  description = "(Optional) Ingress rules to add to the security group"
-  type        = any
-  default     = {}
-}
-variable "egress_rules" {
-  description = "(Optional) Egress rules to add to the security group"
-  type        = any
-  default     = {}
 }

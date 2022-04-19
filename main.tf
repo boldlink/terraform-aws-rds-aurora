@@ -201,7 +201,6 @@ resource "aws_rds_cluster_endpoint" "this" {
   )
 }
 
-
 # Security group
 resource "aws_security_group" "this" {
   count       = var.create_security_group ? 1 : 0

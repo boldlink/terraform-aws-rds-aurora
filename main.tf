@@ -143,20 +143,6 @@ resource "aws_db_subnet_group" "this" {
   )
 }
 
-# Security group
-resource "aws_security_group" "this" {
-  count       = var.create_security_group ? 1 : 0
-  name        = "${var.cluster_identifier}-security-group"
-  vpc_id      = var.vpc_id
-  description = "RDS cluster Security Group"
-  tags = merge(
-    {
-      "Environment" = var.environment
-    },
-    var.other_tags,
-  )
-}
-
 # Parameter Group
 resource "aws_rds_cluster_parameter_group" "this" {
   count       = var.create_cluster_parameter_group ? 1 : 0
@@ -215,7 +201,21 @@ resource "aws_rds_cluster_endpoint" "this" {
   )
 }
 
-# Security Group
+
+# Security group
+resource "aws_security_group" "this" {
+  count       = var.create_security_group ? 1 : 0
+  name        = "${var.cluster_identifier}-security-group"
+  vpc_id      = var.vpc_id
+  description = "RDS cluster Security Group"
+  tags = merge(
+    {
+      "Environment" = var.environment
+    },
+    var.other_tags,
+  )
+}
+
 resource "aws_security_group_rule" "ingress" {
   for_each                 = var.ingress_rules
   type                     = "ingress"

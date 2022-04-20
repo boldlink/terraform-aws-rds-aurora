@@ -229,12 +229,12 @@ resource "aws_security_group_rule" "ingress" {
 resource "aws_security_group_rule" "egress" {
   for_each          = var.egress_rules
   type              = "egress"
-  description       = "Allow all egress traffic"
+  description       = "Allow custom egress traffic"
   from_port         = lookup(each.value, "from_port")
   to_port           = lookup(each.value, "to_port")
   protocol          = "tcp"
   cidr_blocks       = lookup(each.value, "cidr_blocks", null)
-  security_group_id = join("", aws_security_group.this.*.id)
+  security_group_id = lookup(each.value, "security_group_id", aws_security_group.this.*.id)
 }
 
 # Autoscaling

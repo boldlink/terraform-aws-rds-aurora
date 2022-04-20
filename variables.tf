@@ -343,7 +343,6 @@ variable "db_parameter_group_name" {
   description = "(Optional) The name of the DB parameter group to associate with this instance."
   type        = string
   default     = ""
-
 }
 
 # Subnet Group

@@ -269,3 +269,94 @@ resource "aws_appautoscaling_policy" "this" {
     aws_rds_cluster_instance.this,
   ]
 }
+
+# Parameter Group
+resource "aws_rds_cluster_parameter_group" "this" {
+  count       = var.create_cluster_parameter_group ? 1 : 0
+  name        = var.name_prefix == null ? "${var.cluster_identifier}-parameter-group" : null
+  name_prefix = var.name_prefix
+  family      = var.family
+  description = var.description
+  dynamic "parameter" {
+    for_each = var.cluster_parameters
+    content {
+      name         = parameter.value.name
+      value        = parameter.value.value
+      apply_method = lookup(parameter.value, "apply_method", "immediate")
+    }
+  }
+  tags = merge(
+    {
+      "Environment" = var.environment
+    },
+    var.other_tags,
+  )
+}
+
+# Enhanced monitoring
+resource "aws_iam_role" "this" {
+  count              = var.create_monitoring_role && var.instance_count > 0 ? 1 : 0
+  name               = "${var.cluster_identifier}-enhanced-monitoring-role"
+  assume_role_policy = var.assume_role_policy
+  description        = "enhanced monitoring iam role for rds cluster instance."
+  tags = merge(
+    {
+      "Environment" = var.environment
+    },
+    var.other_tags,
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "this" {
+  count      = var.create_monitoring_role && var.instance_count > 0 ? 1 : 0
+  role       = aws_iam_role.this[0].name
+  policy_arn = var.policy_arn
+}
+
+# Cluster Endpoint
+resource "aws_rds_cluster_endpoint" "this" {
+  count                       = var.create_cluster_endpoint ? 1 : 0
+  cluster_identifier          = aws_rds_cluster.this.id
+  cluster_endpoint_identifier = lower(var.cluster_identifier)
+  custom_endpoint_type        = var.custom_endpoint_type
+  static_members              = var.instance_count > 0 ? [aws_rds_cluster_instance.this[0].id] : []
+  tags = merge(
+    {
+      "Environment" = var.environment
+    },
+    var.other_tags,
+  )
+}
+
+# Autoscaling
+resource "aws_appautoscaling_target" "replicas" {
+  count              = var.enable_autoscaling ? 1 : 0
+  service_namespace  = var.service_namespace
+  scalable_dimension = var.scalable_dimension
+  resource_id        = "cluster:${aws_rds_cluster.this.id}"
+  min_capacity       = var.min_capacity
+  max_capacity       = var.max_capacity
+}
+
+resource "aws_appautoscaling_policy" "this" {
+  count              = var.enable_autoscaling ? 1 : 0
+  name               = "${var.cluster_identifier}-auto-scaling"
+  service_namespace  = aws_appautoscaling_target.replicas[0].service_namespace
+  scalable_dimension = aws_appautoscaling_target.replicas[0].scalable_dimension
+  resource_id        = aws_appautoscaling_target.replicas[0].resource_id
+  policy_type        = var.policy_type
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = var.predefined_metric_type
+    }
+
+    target_value       = var.target_value
+    scale_in_cooldown  = var.scale_in_cooldown
+    scale_out_cooldown = var.scale_out_cooldown
+  }
+  depends_on = [
+    aws_rds_cluster.this,
+    aws_rds_cluster_instance.this,
+  ]
+}

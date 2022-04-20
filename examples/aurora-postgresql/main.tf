@@ -3,7 +3,7 @@
 #  Aurora-postgresql example
 # ##########################
 locals {
-  cluster_name = "sample-cluster-aurora"
+  cluster_name = "sample-cluster-aurora-postgres"
   environment  = "test"
 }
 

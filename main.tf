@@ -222,8 +222,8 @@ resource "aws_security_group_rule" "ingress" {
   from_port                = lookup(each.value, "from_port")
   to_port                  = lookup(each.value, "to_port")
   protocol                 = "tcp"
-  source_security_group_id = join("", aws_security_group.this.*.id)
-  security_group_id        = join("", aws_security_group.this.*.id)
+  source_security_group_id = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
+  security_group_id        = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
 }
 
 resource "aws_security_group_rule" "egress" {
@@ -234,7 +234,7 @@ resource "aws_security_group_rule" "egress" {
   to_port           = lookup(each.value, "to_port")
   protocol          = "tcp"
   cidr_blocks       = lookup(each.value, "cidr_blocks", null)
-  security_group_id = lookup(each.value, "security_group_id", aws_security_group.this.*.id)
+  security_group_id = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
 }
 
 # Autoscaling

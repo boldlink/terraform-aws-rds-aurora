@@ -4,7 +4,7 @@
 # ##########################
 
 locals {
-  cluster_name = "sample-cluster-aurora"
+  cluster_name = "sample-cluster-aurora-mysql"
   environment  = "test"
 }
 

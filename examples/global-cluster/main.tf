@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 locals {
-  cluster_name = "sample-cluster-aurora"
+  cluster_name = "sample-global-cluster"
   environment  = "test"
 }
 

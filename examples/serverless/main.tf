@@ -3,7 +3,7 @@
 # ###################################
 
 locals {
-  cluster_name = "sample-cluster-aurora"
+  cluster_name = "sample-cluster-serverless"
   environment  = "test"
 }
 

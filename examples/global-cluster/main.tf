@@ -13,8 +13,11 @@ provider "aws" {
 }
 
 locals {
-  cluster_name = "sample-global-cluster"
-  environment  = "test"
+  cluster_name              = "sample-aurora-cluster"
+  environment               = "test"
+  engine                    = "aurora"
+  engine_version            = "5.6.mysql_aurora.1.22.2"
+  global_cluster_identifier = "${local.cluster_name}-global"
 }
 
 resource "random_string" "master_username" {
@@ -30,36 +33,29 @@ resource "random_password" "master_password" {
   upper   = false
 }
 
-module "kms_key" {
-  source              = "boldlink/kms-key/aws"
-  version             = "1.0.0"
-  description         = "A test kms key for RDS cluster"
-  name                = "${local.cluster_name}-key"
-  alias_name          = "alias/global-cluster-key-alias"
-  enable_key_rotation = true
-}
-
-resource "aws_rds_global_cluster" "example" {
-  global_cluster_identifier = "${local.cluster_name}-global"
-  engine                    = "aurora"
-  engine_version            = "5.6.mysql_aurora.1.22.2"
+module "global_cluster" {
+  source                    = "./../../modules/global-cluster"
+  create_global_cluster     = true
+  global_cluster_identifier = local.global_cluster_identifier
+  engine                    = local.engine
+  engine_version            = local.engine_version
   database_name             = "random_db"
 }
 
 module "primary_cluster" {
-  source                    = "./../../"
-  instance_count            = 1
-  global_cluster_identifier = aws_rds_global_cluster.example.id
-  engine                    = aws_rds_global_cluster.example.engine
-  engine_version            = aws_rds_global_cluster.example.engine_version
-  port                      = 3306
-  engine_mode               = "provisioned"
-  instance_class            = "db.r5.2xlarge"
-  subnet_ids                = data.aws_subnets.default.ids
-  cluster_identifier        = "${local.cluster_name}-primary"
-  master_username           = random_string.master_username.result
-  master_password           = random_password.master_password.result
-  final_snapshot_identifier = "${local.cluster_name}-snapshot-${uuid()}"
+  source                          = "./../../"
+  instance_count                  = 1
+  global_cluster_identifier       = local.global_cluster_identifier
+  engine                          = local.engine
+  engine_version                  = local.engine_version
+  port                            = 3306
+  engine_mode                     = "provisioned"
+  instance_class                  = "db.r5.2xlarge"
+  subnet_ids                      = data.aws_subnets.default.ids
+  cluster_identifier              = "${local.cluster_name}-primary"
+  master_username                 = random_string.master_username.result
+  master_password                 = random_password.master_password.result
+  final_snapshot_identifier       = "${local.cluster_name}-snapshot-${uuid()}"
   vpc_id                          = data.aws_vpc.default.id
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
   create_security_group           = true
@@ -109,9 +105,9 @@ module "secondary_cluster" {
     aws = aws.secondary
   }
   instance_count                  = 1
-  global_cluster_identifier       = aws_rds_global_cluster.example.id
-  engine                          = aws_rds_global_cluster.example.engine
-  engine_version                  = aws_rds_global_cluster.example.engine_version
+  global_cluster_identifier       = local.global_cluster_identifier
+  engine                          = local.engine
+  engine_version                  = local.engine_version
   port                            = 3306
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.2xlarge"
@@ -129,5 +125,6 @@ module "secondary_cluster" {
 output "aurora_global_cluster" {
   value = [
     module.primary_cluster,
+    module.global_cluster
   ]
 }

@@ -16,7 +16,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_kms_key"></a> [kms\_key](#module\_kms\_key) | boldlink/kms-key/aws | 1.0.0 |
+| <a name="module_global_cluster"></a> [global\_cluster](#module\_global\_cluster) | ./../../modules/global-cluster | n/a |
 | <a name="module_primary_cluster"></a> [primary\_cluster](#module\_primary\_cluster) | ./../../ | n/a |
 | <a name="module_secondary_cluster"></a> [secondary\_cluster](#module\_secondary\_cluster) | ./../../ | n/a |
 
@@ -24,7 +24,6 @@ No requirements.
 
 | Name | Type |
 |------|------|
-| [aws_rds_global_cluster.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_global_cluster) | resource |
 | [random_password.master_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_string.master_username](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [aws_iam_policy_document.monitoring](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |

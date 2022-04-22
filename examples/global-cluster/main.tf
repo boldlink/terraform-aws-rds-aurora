@@ -1,11 +1,23 @@
+# #####################################
+#  Global cluster MySQL Aurora example
+# #####################################
 
-# ##########################
-#  Aurora-mysql example
-# ##########################
+provider "aws" {
+  alias  = "primary"
+  region = "eu-west-1"
+}
+
+provider "aws" {
+  alias  = "secondary"
+  region = "eu-west-2"
+}
 
 locals {
-  cluster_name = "sample-cluster-aurora-mysql"
-  environment  = "test"
+  cluster_name              = "sample-aurora-cluster"
+  environment               = "test"
+  engine                    = "aurora"
+  engine_version            = "5.6.mysql_aurora.1.22.2"
+  global_cluster_identifier = "${local.cluster_name}-global"
 }
 
 resource "random_string" "master_username" {
@@ -21,30 +33,29 @@ resource "random_password" "master_password" {
   upper   = false
 }
 
-module "kms_key" {
-  source              = "boldlink/kms-key/aws"
-  version             = "1.0.0"
-  description         = "A test kms key for RDS cluster"
-  name                = "${local.cluster_name}-key"
-  alias_name          = "alias/rds-key-alias"
-  enable_key_rotation = true
+module "global_cluster" {
+  source                    = "./../../modules/global-cluster"
+  create_global_cluster     = true
+  global_cluster_identifier = local.global_cluster_identifier
+  engine                    = local.engine
+  engine_version            = local.engine_version
+  database_name             = "random_db"
 }
 
-module "rds_cluster" {
+module "primary_cluster" {
   source                          = "./../../"
   instance_count                  = 1
-  engine                          = "aurora-mysql"
-  engine_version                  = "5.7"
+  global_cluster_identifier       = local.global_cluster_identifier
+  engine                          = local.engine
+  engine_version                  = local.engine_version
   port                            = 3306
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.2xlarge"
   subnet_ids                      = data.aws_subnets.default.ids
-  cluster_identifier              = local.cluster_name
+  cluster_identifier              = "${local.cluster_name}-primary"
   master_username                 = random_string.master_username.result
   master_password                 = random_password.master_password.result
   final_snapshot_identifier       = "${local.cluster_name}-snapshot-${uuid()}"
-  storage_encrypted               = true
-  kms_key_id                      = join("", module.kms_key.*.arn)
   vpc_id                          = data.aws_vpc.default.id
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
   create_security_group           = true
@@ -53,7 +64,6 @@ module "rds_cluster" {
       from_port = 3306
       to_port   = 3306
     }
-
   }
   egress_rules = {
     default = {
@@ -67,7 +77,7 @@ module "rds_cluster" {
   environment                         = local.environment
   iam_database_authentication_enabled = true
   deletion_protection                 = false
-  create_cluster_endpoint             = true
+  create_db_subnet_group              = false
   create_monitoring_role              = true
   monitoring_interval                 = 30
   assume_role_policy                  = data.aws_iam_policy_document.monitoring.json
@@ -87,8 +97,32 @@ module "rds_cluster" {
   predefined_metric_type = "RDSReaderAverageCPUUtilization"
 }
 
-output "rds_cluster_output" {
+module "secondary_cluster" {
+  source          = "./../../"
+  primary_cluster = false
+  providers = {
+    aws = aws.secondary
+  }
+  instance_count                  = 1
+  global_cluster_identifier       = local.global_cluster_identifier
+  engine                          = local.engine
+  engine_version                  = local.engine_version
+  port                            = 3306
+  engine_mode                     = "provisioned"
+  instance_class                  = "db.r5.2xlarge"
+  cluster_identifier              = "${local.cluster_name}-secondary"
+  skip_final_snapshot             = true
+  vpc_id                          = data.aws_vpc.default.id
+  enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
+  create_db_subnet_group          = false
+  depends_on = [
+    module.primary_cluster
+  ]
+}
+
+output "aurora_global_cluster" {
   value = [
-    module.rds_cluster,
+    module.primary_cluster,
+    module.global_cluster
   ]
 }

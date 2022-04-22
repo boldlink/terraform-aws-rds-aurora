@@ -64,7 +64,6 @@ module "primary_cluster" {
       from_port = 3306
       to_port   = 3306
     }
-
   }
   egress_rules = {
     default = {
@@ -120,7 +119,6 @@ module "secondary_cluster" {
     module.primary_cluster
   ]
 }
-
 
 output "aurora_global_cluster" {
   value = [

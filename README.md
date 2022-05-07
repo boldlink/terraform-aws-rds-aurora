@@ -1,3 +1,6 @@
+
+[![Build Status](https://github.com/boldlink/terraform-aws-rds-aurora/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/boldlink/terraform-aws-rds-aurora/actions)
+
 ## Description
 This Terraform module Manages a RDS Aurora Cluster.
 

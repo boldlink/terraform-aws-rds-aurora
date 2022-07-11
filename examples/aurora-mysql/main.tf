@@ -1,6 +1,6 @@
-###########################
+###################################
 #  Aurora-mysql example
-###########################
+###################################
 module "vpc" {
   source               = "git::https://github.com/boldlink/terraform-aws-vpc.git?ref=2.0.3"
   cidr_block           = local.cidr_block

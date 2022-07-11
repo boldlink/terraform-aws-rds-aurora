@@ -1,6 +1,6 @@
-######################################
-#  Global cluster MySQL Aurora example
-######################################
+###################################################################
+# Complete example with Global cluster MySQL Aurora example
+###################################################################
 provider "aws" {
   alias  = "primary"
   region = "eu-west-1"
@@ -48,7 +48,8 @@ module "global_cluster" {
 }
 
 module "primary_cluster" {
-  source                          = "../../"
+  source = "../../"
+  #checkov:skip=CKV_AWS_96:Ensure all data stored in Aurora is securely encrypted at rest
   instance_count                  = 1
   global_cluster_identifier       = local.global_cluster_identifier
   engine                          = local.engine
@@ -121,7 +122,12 @@ module "secondary_vpc" {
 }
 
 module "secondary_cluster" {
-  source                          = "../../"
+  source = "../../"
+  #checkov:skip=CKV_AWS_96:Ensure all data stored in Aurora is securely encrypted at rest
+  #checkov:skip=CKV_AWS_128:Ensure that an Amazon RDS Clusters have AWS Identity and Access Management (IAM) authentication enabled
+  #checkov:skip=CKV_AWS_139:Ensure that RDS clusters have deletion protection enabled
+  #checkov:skip=CKV_AWS_162:Ensure RDS cluster has IAM authentication enabled
+  #checkov:skip=CKV_AWS_118:Ensure that enhanced monitoring is enabled for Amazon RDS instances
   primary_cluster                 = false
   instance_count                  = 1
   global_cluster_identifier       = local.global_cluster_identifier

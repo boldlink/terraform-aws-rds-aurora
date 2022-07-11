@@ -4,6 +4,7 @@ variable "primary_cluster" {
   type        = bool
   default     = true
 }
+
 variable "database_name" {
   description = "(Optional) Name for an automatically created database on cluster creation."
   type        = string
@@ -371,6 +372,7 @@ variable "ingress_rules" {
   type        = any
   default     = {}
 }
+
 variable "egress_rules" {
   description = "(Optional) Egress rules to add to the security group"
   type        = any

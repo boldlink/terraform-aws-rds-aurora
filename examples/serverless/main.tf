@@ -42,7 +42,10 @@ module "kms_key" {
 }
 
 module "aurora_serverless" {
-  source                = "../../"
+  source = "../../"
+  #checkov:skip=CKV_AWS_128:Ensure that an Amazon RDS Clusters have AWS Identity and Access Management (IAM) authentication enabled
+  #checkov:skip=CKV_AWS_162:Ensure RDS cluster has IAM authentication enabled
+  #checkov:skip=CKV2_AWS_8:Ensure that RDS clusters has ba#checkov:skip=CKup plan of AWS Ba#checkov:skip=CKup
   instance_count        = 0
   engine                = "aurora-mysql"
   engine_version        = "5.7"

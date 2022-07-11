@@ -29,7 +29,11 @@ resource "random_password" "master_password" {
 }
 
 module "minimum" {
-  source              = "../../"
+  source = "../../"
+  #checkov:skip=CKV_AWS_96:Ensure all data stored in Aurora is securely encrypted at rest
+  #checkov:skip=CKV_AWS_128:Ensure that an Amazon RDS Clusters have AWS Identity and Access Management (IAM) authentication enabled
+  #checkov:skip=CKV_AWS_162:Ensure RDS cluster has IAM authentication enabled
+  #checkov:skip=CKV_AWS_118:Ensure that enhanced monitoring is enabled for Amazon RDS instances
   instance_count      = 1
   engine              = "aurora-mysql"
   port                = 3306

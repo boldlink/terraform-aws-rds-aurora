@@ -17,8 +17,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.21.0 |
-| <a name="provider_aws.secondary"></a> [aws.secondary](#provider\_aws.secondary) | 4.21.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.22.0 |
+| <a name="provider_aws.secondary"></a> [aws.secondary](#provider\_aws.secondary) | 4.22.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.3.2 |
 
 ## Modules

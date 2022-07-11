@@ -1,6 +1,6 @@
 
 variable "primary_cluster" {
-  description = "Confirms if this will be a primary cluster: If not, `database_name`, `master_username` and `master_password` are not required for `secondary` clusters with a `global_cluster_identifier` defined. "
+  description = "Confirms if this will be a primary cluster: If not, `database_name`, `master_username` and `master_password` are not required for `secondary` clusters with a `global_cluster_identifier` defined."
   type        = bool
   default     = true
 }
@@ -18,7 +18,7 @@ variable "master_password" {
 }
 
 variable "master_username" {
-  description = "(Required unless a snapshot_identifier or replication_source_identifier is provided or unless a global_cluster_identifier is provided when the cluster is the 'secondary' cluster of a global database) Username for the master DB user. "
+  description = "(Required unless a snapshot_identifier or replication_source_identifier is provided or unless a global_cluster_identifier is provided when the cluster is the 'secondary' cluster of a global database) Username for the master DB user."
   type        = string
   default     = null
 }
@@ -30,7 +30,7 @@ variable "allow_major_version_upgrade" {
 }
 
 variable "apply_immediately" {
-  description = "(Optional) Specifies whether any cluster modifications are applied immediately, or during the next maintenance window. Default is false"
+  description = "(Optional) Specifies whether any cluster modifications are applied immediately, or during the next maintenance window. Default is `false`."
   type        = bool
   default     = false
 }
@@ -66,7 +66,7 @@ variable "cluster_identifier" {
 }
 
 variable "copy_tags_to_snapshot" {
-  description = "(Optional, boolean) Copy all Cluster tags to snapshots. Default is false."
+  description = "(Optional, boolean) Copy all Cluster tags to snapshots. Default is `false`."
   type        = bool
   default     = false
 }
@@ -132,7 +132,7 @@ variable "final_snapshot_identifier" {
 }
 
 variable "global_cluster_identifier" {
-  description = "(Optional) The global cluster identifier specified on aws_rds_global_cluster."
+  description = "(Optional) The global cluster identifier specified on `aws_rds_global_cluster`."
   type        = string
   default     = null
 }

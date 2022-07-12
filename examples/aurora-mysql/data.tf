@@ -1,19 +1,14 @@
 
 data "aws_partition" "current" {}
 
-data "aws_vpc" "default" {
-  filter {
-    name   = "tag:Name"
-    values = ["default"]
-  }
+
+data "aws_availability_zones" "available" {
+  state = "available"
 }
 
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
 
 data "aws_iam_policy_document" "monitoring" {
   statement {

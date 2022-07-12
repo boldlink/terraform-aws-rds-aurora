@@ -1,4 +1,3 @@
-
 data "aws_partition" "current" {}
 
 data "aws_availability_zones" "available" {
@@ -20,4 +19,14 @@ data "aws_iam_policy_document" "monitoring" {
       identifiers = ["monitoring.rds.amazonaws.com"]
     }
   }
+}
+
+###secondary region
+data "aws_availability_zones" "secondary" {
+  state    = "available"
+  provider = aws.secondary
+}
+
+data "aws_region" "secondary" {
+  provider = aws.secondary
 }

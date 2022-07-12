@@ -1,4 +1,3 @@
-
 output "arn" {
   description = "Amazon Resource Name (ARN) of cluster"
   value       = aws_rds_cluster.this.arn

@@ -2,7 +2,7 @@
 
 [<img src="https://avatars.githubusercontent.com/u/25388280?s=200&v=4" width="96"/>](https://boldlink.io)
 
-# Terraform module usage example for aurora-mysql
+# Terraform module usage complete example with aurora global cluster
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -18,14 +18,17 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 4.22.0 |
+| <a name="provider_aws.secondary"></a> [aws.secondary](#provider\_aws.secondary) | 4.22.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.3.2 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_kms_key"></a> [kms\_key](#module\_kms\_key) | boldlink/kms/aws | n/a |
-| <a name="module_rds_cluster"></a> [rds\_cluster](#module\_rds\_cluster) | ../../ | n/a |
+| <a name="module_global_cluster"></a> [global\_cluster](#module\_global\_cluster) | ../../modules/global-cluster | n/a |
+| <a name="module_primary_cluster"></a> [primary\_cluster](#module\_primary\_cluster) | ../../ | n/a |
+| <a name="module_secondary_cluster"></a> [secondary\_cluster](#module\_secondary\_cluster) | ../../ | n/a |
+| <a name="module_secondary_vpc"></a> [secondary\_vpc](#module\_secondary\_vpc) | git::https://github.com/boldlink/terraform-aws-vpc.git | 2.0.3 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | git::https://github.com/boldlink/terraform-aws-vpc.git | 2.0.3 |
 
 ## Resources
@@ -35,10 +38,12 @@
 | [random_password.master_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_string.master_username](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
+| [aws_availability_zones.secondary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.monitoring](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
+| [aws_region.secondary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
@@ -48,7 +53,7 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_rds_cluster_output"></a> [rds\_cluster\_output](#output\_rds\_cluster\_output) | Values for resources created by module. |
+| <a name="output_aurora_global_cluster"></a> [aurora\_global\_cluster](#output\_aurora\_global\_cluster) | Values for resources created by module. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Third party software

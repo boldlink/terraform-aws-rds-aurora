@@ -4,7 +4,6 @@
 
 # Terraform module usage example for aurora-mysql
 
-
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 

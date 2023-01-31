@@ -34,13 +34,8 @@ resource "aws_rds_cluster" "this" {
   snapshot_identifier                 = var.snapshot_identifier
   source_region                       = var.source_region
   storage_encrypted                   = var.storage_encrypted
-  tags = merge(
-    {
-      "Environment" = var.environment
-    },
-    var.other_tags,
-  )
-  vpc_security_group_ids = [join("", aws_security_group.this.*.id)]
+  tags                                = var.tags
+  vpc_security_group_ids              = [join("", aws_security_group.this.*.id)]
 
   # RDS Aurora Serverless does not support loading data from S3, so its not possible to directly use engine_mode set to serverless with s3_import.
   dynamic "s3_import" {
@@ -120,12 +115,7 @@ resource "aws_rds_cluster_instance" "this" {
     }
   }
 
-  tags = merge(
-    {
-      "Environment" = var.environment
-    },
-    var.other_tags,
-  )
+  tags = var.tags
 }
 
 # Subnet Group
@@ -134,13 +124,7 @@ resource "aws_db_subnet_group" "this" {
   name        = "${var.cluster_identifier}-subnetgroup"
   subnet_ids  = var.subnet_ids
   description = "${var.cluster_identifier} RDS Aurora Subnet Group"
-  tags = merge(
-    {
-      "Name"        = "${var.cluster_identifier}-subnetgroup"
-      "Environment" = var.environment
-    },
-    var.other_tags,
-  )
+  tags        = var.tags
 }
 
 # Parameter Group
@@ -158,12 +142,7 @@ resource "aws_rds_cluster_parameter_group" "this" {
       apply_method = lookup(parameter.value, "apply_method", "immediate")
     }
   }
-  tags = merge(
-    {
-      "Environment" = var.environment
-    },
-    var.other_tags,
-  )
+  tags = var.tags
 }
 
 # Enhanced monitoring
@@ -172,12 +151,7 @@ resource "aws_iam_role" "this" {
   name               = "${var.cluster_identifier}-enhanced-monitoring-role"
   assume_role_policy = var.assume_role_policy
   description        = "enhanced monitoring iam role for rds cluster instance."
-  tags = merge(
-    {
-      "Environment" = var.environment
-    },
-    var.other_tags,
-  )
+  tags               = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
@@ -193,12 +167,7 @@ resource "aws_rds_cluster_endpoint" "this" {
   cluster_endpoint_identifier = lower(var.cluster_identifier)
   custom_endpoint_type        = var.custom_endpoint_type
   static_members              = var.instance_count > 0 ? [aws_rds_cluster_instance.this[0].id] : []
-  tags = merge(
-    {
-      "Environment" = var.environment
-    },
-    var.other_tags,
-  )
+  tags                        = var.tags
 }
 
 # Security group
@@ -207,12 +176,7 @@ resource "aws_security_group" "this" {
   name        = "${var.cluster_identifier}-security-group"
   vpc_id      = var.vpc_id
   description = "RDS cluster Security Group"
-  tags = merge(
-    {
-      "Environment" = var.environment
-    },
-    var.other_tags,
-  )
+  tags        = var.tags
 }
 
 resource "aws_security_group_rule" "ingress" {

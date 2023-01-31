@@ -28,7 +28,7 @@ Examples available [`here`](https://github.com/boldlink/terraform-aws-rds-aurora
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.22.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.10.0 |
 
 ## Modules
 
@@ -77,4 +77,4 @@ This repository uses third party software:
   * Install with `brew install tflint`
   * Manually use via pre-commit
 
-#### BOLDLink-SIG 2022
+#### BOLDLink-SIG 2023

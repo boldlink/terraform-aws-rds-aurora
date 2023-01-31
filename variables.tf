@@ -209,15 +209,8 @@ variable "storage_encrypted" {
   default     = false
 }
 
-#Tags
-variable "environment" {
-  type        = string
-  description = "The environment this resource is being deployed to"
-  default     = null
-}
-
-variable "other_tags" {
-  description = "For adding an additional values for tags"
+variable "tags" {
+  description = "(Optional)A map of tags to assign to the resources"
   type        = map(string)
   default     = {}
 }

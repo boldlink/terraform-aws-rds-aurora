@@ -32,4 +32,5 @@ module "minimum" {
   master_password     = random_password.master_password.result
   vpc_id              = data.aws_vpc.supporting.id
   skip_final_snapshot = true
+  tags                = local.tags
 }

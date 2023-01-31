@@ -16,7 +16,7 @@ resource "random_password" "master_password" {
 }
 
 module "rds_cluster" {
-  #checkov:skip=CKV_AWS_139:Ensure that RDS clusters have deletion protection enabled  
+  #checkov:skip=CKV_AWS_139:Ensure that RDS clusters have deletion protection enabled
   source                          = "../../"
   instance_count                  = 1
   engine                          = "aurora-mysql"
@@ -75,12 +75,12 @@ module "rds_cluster" {
 resource "aws_backup_vault" "this" {
   name          = "${local.cluster_name}-backup-vault"
   force_destroy = true
-  kms_key_arn = data.aws_kms_key.supporting.arn
+  kms_key_arn   = data.aws_kms_key.supporting.arn
   tags          = local.tags
 }
 
 resource "aws_backup_plan" "this" {
-  name  = "${local.cluster_name}-backup-plan"
+  name = "${local.cluster_name}-backup-plan"
   rule {
     rule_name         = "${local.cluster_name}-backup-rule"
     target_vault_name = aws_backup_vault.this.name
@@ -88,7 +88,7 @@ resource "aws_backup_plan" "this" {
 
     lifecycle {
       delete_after = 14
-    }    
+    }
   }
 }
 

@@ -149,7 +149,7 @@ resource "aws_backup_vault" "this" {
 }
 
 resource "aws_backup_plan" "this" {
-  name  = "${local.cluster_name}-backup-plan"
+  name = "${local.cluster_name}-backup-plan"
   rule {
     rule_name         = "${local.cluster_name}-backup-rule"
     target_vault_name = aws_backup_vault.this.name
@@ -157,7 +157,7 @@ resource "aws_backup_plan" "this" {
 
     lifecycle {
       delete_after = 14
-    }    
+    }
   }
 }
 

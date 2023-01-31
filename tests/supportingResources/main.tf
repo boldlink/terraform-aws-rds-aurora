@@ -1,15 +1,16 @@
 module "aurora_vpc" {
-  source               = "boldlink/vpc/aws"
-  version              = "3.0.2"
-  name                 = local.name
-  cidr_block           = local.cidr_block
+  source                  = "boldlink/vpc/aws"
+  version                 = "3.0.2"
+  name                    = local.name
+  cidr_block              = local.cidr_block
   enable_internal_subnets = true
 
   internal_subnets = {
     databases = {
-      cidrs        = local.database_subnets
+      cidrs = local.database_subnets
     }
   }
+  tags = local.tags
 }
 
 module "kms_key" {
@@ -20,4 +21,3 @@ module "kms_key" {
   enable_key_rotation     = true
   deletion_window_in_days = 7
 }
-

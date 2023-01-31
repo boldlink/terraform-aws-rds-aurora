@@ -64,18 +64,18 @@ module "rds_cluster" {
   scalable_dimension                  = "rds:cluster:ReadReplicaCount"
   policy_type                         = "TargetTrackingScaling"
   predefined_metric_type              = "RDSReaderAverageCPUUtilization"
-  tags = local.tags
+  tags                                = local.tags
 }
 
 resource "aws_backup_vault" "this" {
   name          = "${local.cluster_name}-backup-vault"
   force_destroy = true
-  kms_key_arn = data.aws_kms_key.supporting.arn
+  kms_key_arn   = data.aws_kms_key.supporting.arn
   tags          = local.tags
 }
 
 resource "aws_backup_plan" "this" {
-  name  = "${local.cluster_name}-backup-plan"
+  name = "${local.cluster_name}-backup-plan"
   rule {
     rule_name         = "${local.cluster_name}-backup-rule"
     target_vault_name = aws_backup_vault.this.name
@@ -83,7 +83,7 @@ resource "aws_backup_plan" "this" {
 
     lifecycle {
       delete_after = 14
-    }    
+    }
   }
 }
 

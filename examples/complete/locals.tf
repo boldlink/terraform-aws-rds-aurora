@@ -8,7 +8,15 @@ locals {
   database_subnets          = cidrsubnets(local.cidr_block, 8, 8, 8)
   secondary_azs             = flatten(data.aws_availability_zones.secondary.names)
 
-  tags = {
-    Name = local.cluster_name
+  tags =  {
+    Name               = local.cluster_name
+    Environment        = "example"
+    "user::CostCenter" = "terraform-registry"
+    department         = "operations"
+    InstanceScheduler  = true
+    Project            = "aws-rds"
+    Owner              = "hugo.almeida"
+    LayerName          = "c550-aws-rds-cluster"
+    LayerId            = "c550"
   }
 }

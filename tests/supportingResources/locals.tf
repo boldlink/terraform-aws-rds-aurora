@@ -7,7 +7,6 @@ locals {
     Environment        = "examples"
     "user::CostCenter" = "terraform-registry"
     department         = "operations"
-    InstanceScheduler  = true
     Project            = "aws-vpc"
     Owner              = "hugo.almeida"
     LayerName          = "c300-aws-vpc"

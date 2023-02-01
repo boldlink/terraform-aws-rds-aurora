@@ -12,7 +12,12 @@
 # AWS RDS Aurora Terraform module
 
 ## Description
-This Terraform module Manages a RDS Aurora Cluster.
+This Terraform module Manages a RDS Aurora Cluster and its associated resources.
+
+### Why choose this module
+- Default configurations have been validated by Checkov to ensure best practices and security.
+- Ability to create a global cluster, rds cluster, rds instance, security groups, auto-scaling configuration and parameter groups with minimum configuration changes
+- Has elaborate examples that you can use to setup your cluster and instances within a very short time.
 
 Examples available [here](https://github.com/boldlink/terraform-aws-rds-aurora/tree/main/examples)
 

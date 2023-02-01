@@ -1,7 +1,7 @@
 locals {
   cluster_name              = "sample-cluster-serverless"
   supporting_resources_name = "terraform-aws-rds-aurora"
-  tags =  {
+  tags = {
     Name               = local.cluster_name
     Environment        = "example"
     "user::CostCenter" = "terraform-registry"

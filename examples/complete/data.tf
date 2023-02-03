@@ -10,7 +10,17 @@ data "aws_iam_policy_document" "monitoring" {
 
     principals {
       type        = "Service"
-      identifiers = ["monitoring.rds.amazonaws.com"]
+      identifiers = ["monitoring.rds.${local.dns_suffix}"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "backup" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["backup.${local.dns_suffix}"]
     }
   }
 }
@@ -23,16 +33,6 @@ data "aws_availability_zones" "secondary" {
 
 data "aws_region" "secondary" {
   provider = aws.secondary
-}
-
-data "aws_iam_policy_document" "backup" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    principals {
-      type        = "Service"
-      identifiers = ["backup.amazonaws.com"]
-    }
-  }
 }
 
 data "aws_vpc" "supporting" {

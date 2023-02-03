@@ -9,7 +9,7 @@ locals {
     InstanceScheduler  = true
     Project            = "aws-rds"
     Owner              = "hugo.almeida"
-    LayerName          = "c550-aws-rds-cluster"
-    LayerId            = "c550"
+    LayerName          = "cExample"
+    LayerId            = "cExample"
   }
 }

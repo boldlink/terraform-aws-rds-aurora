@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - use aws backup module in examples
+- Add aws backup resources in the module with create being optional
 
 ## [1.0.4] - 2023-02-01
 - fix: CKV2_AWS_8: Ensure that RDS clusters has backup plan of AWS Backup

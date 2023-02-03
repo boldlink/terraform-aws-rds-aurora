@@ -8,8 +8,8 @@ locals {
     "user::CostCenter" = "terraform-registry"
     department         = "operations"
     Project            = "aws-vpc"
-    Owner              = "hugo.almeida"
-    LayerName          = "c300-aws-vpc"
-    LayerId            = "c300"
+    Owner              = "Boldlink"
+    LayerName          = "cExample"
+    LayerId            = "cExample"
   }
 }

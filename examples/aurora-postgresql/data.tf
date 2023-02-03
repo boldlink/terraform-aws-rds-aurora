@@ -9,7 +9,7 @@ data "aws_iam_policy_document" "monitoring" {
 
     principals {
       type        = "Service"
-      identifiers = ["monitoring.rds.amazonaws.com"]
+      identifiers = ["monitoring.rds.${local.dns_suffix}"]
     }
   }
 }
@@ -19,7 +19,7 @@ data "aws_iam_policy_document" "backup" {
     actions = ["sts:AssumeRole"]
     principals {
       type        = "Service"
-      identifiers = ["backup.amazonaws.com"]
+      identifiers = ["backup.${local.dns_suffix}"]
     }
   }
 }

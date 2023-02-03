@@ -1,6 +1,7 @@
 locals {
   cluster_name              = "sample-cluster-aurora-mysql"
   supporting_resources_name = "terraform-aws-rds-aurora"
+  dns_suffix                = data.aws_partition.current.dns_suffix
   tags = {
     Name               = local.cluster_name
     Environment        = "example"
@@ -8,8 +9,8 @@ locals {
     department         = "operations"
     InstanceScheduler  = true
     Project            = "aws-rds"
-    Owner              = "hugo.almeida"
-    LayerName          = "c550-aws-rds-cluster"
-    LayerId            = "c550"
+    Owner              = "Boldlink"
+    LayerName          = "cExample"
+    LayerId            = "cExample"
   }
 }

@@ -7,7 +7,7 @@ locals {
   cidr_block                = "172.16.0.0/16"
   database_subnets          = cidrsubnets(local.cidr_block, 8, 8, 8)
   secondary_azs             = flatten(data.aws_availability_zones.secondary.names)
-  dns_suffix                = data.aws_partition.current.dns_suffix  
+  dns_suffix                = data.aws_partition.current.dns_suffix
 
   tags = {
     Name               = local.cluster_name

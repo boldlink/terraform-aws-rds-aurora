@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - use aws backup module in examples
 - Add aws backup resources in the module with create being optional
+- fix: changes in place when rds security group is not created
 
 ## [1.0.4] - 2023-02-01
 - fix: CKV2_AWS_8: Ensure that RDS clusters has backup plan of AWS Backup
+- fix: resource recreation caused by availability zones
 - Add Backup plan for RDS cluster in Example
 - Add supporting resources for module
 - Add new github workflow files
+
 ## [1.0.3] - 2022-07-06
 ### Changes
 - Added the `.github/workflow` folder (not supposed to run gitcommit)

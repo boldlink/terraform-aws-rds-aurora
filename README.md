@@ -21,6 +21,41 @@ This Terraform module Manages a RDS Aurora Cluster and its associated resources.
 
 Examples available [here](https://github.com/boldlink/terraform-aws-rds-aurora/tree/main/examples)
 
+## Usage
+*NOTE*: These examples use the latest version of this module
+```console
+resource "random_string" "master_username" {
+  length  = 6
+  special = false
+  upper   = false
+  numeric = false
+}
+
+resource "random_password" "master_password" {
+  length  = 16
+  special = false
+  upper   = false
+}
+
+module "minimum" {
+  source = "boldlink/rds-aurora/aws"
+  instance_count      = 1
+  availability_zones  = data.aws_availability_zones.available.names
+  engine              = "aurora-mysql"
+  port                = 3306
+  instance_class      = "db.r5.2xlarge"
+  subnet_ids          = data.aws_subnets.database.ids
+  cluster_identifier  = local.cluster_name
+  master_username     = random_string.master_username.result
+  master_password     = random_password.master_password.result
+  vpc_id              = data.aws_vpc.supporting.id
+  skip_final_snapshot = true
+  create_security_group = true
+  tags                = local.tags
+}
+```
+
+
 ## Documentation
 
 [AWS RDS Aurora Documentation ](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.html)
@@ -156,7 +191,6 @@ No modules.
 | <a name="output_availability_zones"></a> [availability\_zones](#output\_availability\_zones) | The availability zone of the instance |
 | <a name="output_backup_retention_period"></a> [backup\_retention\_period](#output\_backup\_retention\_period) | The backup retention period |
 | <a name="output_cluster_identifier"></a> [cluster\_identifier](#output\_cluster\_identifier) | The RDS Cluster Identifier |
-| <a name="output_cluster_members"></a> [cluster\_members](#output\_cluster\_members) | List of RDS Instances that are a part of this cluster |
 | <a name="output_cluster_resource_id"></a> [cluster\_resource\_id](#output\_cluster\_resource\_id) | The RDS Cluster Resource ID |
 | <a name="output_database_name"></a> [database\_name](#output\_database\_name) | The database name |
 | <a name="output_endpoint"></a> [endpoint](#output\_endpoint) | The DNS address of the RDS instance |

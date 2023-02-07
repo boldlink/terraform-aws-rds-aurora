@@ -41,3 +41,7 @@ data "aws_subnets" "database" {
 data "aws_kms_key" "supporting" {
   key_id = "alias/${local.supporting_resources_name}-alias"
 }
+
+data "aws_availability_zones" "available" {
+  state = "available"
+}

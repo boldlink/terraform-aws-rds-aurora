@@ -12,3 +12,7 @@ data "aws_subnets" "database" {
     values = ["${local.supporting_resources_name}.databases.int.*"]
   }
 }
+
+data "aws_availability_zones" "available" {
+  state = "available"
+}

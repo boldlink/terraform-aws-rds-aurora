@@ -18,11 +18,6 @@ output "cluster_resource_id" {
   value       = aws_rds_cluster.this.cluster_resource_id
 }
 
-output "cluster_members" {
-  description = " List of RDS Instances that are a part of this cluster"
-  value       = aws_rds_cluster.this.cluster_members
-}
-
 output "availability_zones" {
   description = "The availability zone of the instance"
   value       = aws_rds_cluster.this.availability_zones

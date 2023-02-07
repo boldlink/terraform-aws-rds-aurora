@@ -21,6 +21,7 @@ module "aurora_serverless" {
   #checkov:skip=CKV_AWS_162:Ensure RDS cluster has IAM authentication enabled
   #checkov:skip=CKV_AWS_139:Ensure that RDS clusters have deletion protection enabled
   instance_count        = 0
+  availability_zones    = data.aws_availability_zones.available.names
   engine                = "aurora-mysql"
   engine_version        = "5.7"
   port                  = 3306

@@ -19,6 +19,7 @@ module "rds_cluster" {
   #checkov:skip=CKV_AWS_139:Ensure that RDS clusters have deletion protection enabled
   source                          = "../../"
   instance_count                  = 1
+  availability_zones              = data.aws_availability_zones.available.names
   engine                          = "aurora-mysql"
   engine_version                  = "5.7"
   port                            = 3306
@@ -28,7 +29,7 @@ module "rds_cluster" {
   cluster_identifier              = local.cluster_name
   master_username                 = random_string.master_username.result
   master_password                 = random_password.master_password.result
-  final_snapshot_identifier       = "${local.cluster_name}-snapshot-${uuid()}"
+  final_snapshot_identifier       = "${local.cluster_name}-snapshot"
   storage_encrypted               = true
   kms_key_id                      = data.aws_kms_key.supporting.arn
   vpc_id                          = data.aws_vpc.supporting.id
@@ -100,6 +101,11 @@ resource "aws_backup_selection" "this" {
   resources = [
     module.rds_cluster.arn
   ]
+  lifecycle {
+    ignore_changes = [
+      resources
+    ]
+  }
 }
 
 resource "aws_iam_role" "backup" {

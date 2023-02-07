@@ -79,6 +79,12 @@ resource "aws_rds_cluster" "this" {
       delete = lookup(timeouts.value, "delete", "120m")
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      replication_source_identifier
+    ]
+  }
 }
 
 # Cluster Instance

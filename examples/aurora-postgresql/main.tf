@@ -20,6 +20,7 @@ module "rds_cluster" {
   #checkov:skip=CKV_AWS_139:Ensure that RDS clusters have deletion protection enabled
   source                          = "../../"
   instance_count                  = 1
+  availability_zones              = data.aws_availability_zones.available.names
   engine                          = "aurora-postgresql"
   engine_version                  = "11.12"
   port                            = 5432

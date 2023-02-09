@@ -1,6 +1,15 @@
 locals {
-  cluster_name     = "minimum-cluster-aurora-mysql"
-  cidr_block       = "172.16.0.0/16"
-  database_subnets = cidrsubnets(local.cidr_block, 8, 8, 8)
-  azs              = flatten(data.aws_availability_zones.available.names)
+  cluster_name              = "minimum-cluster-aurora-mysql"
+  supporting_resources_name = "terraform-aws-rds-aurora"
+  tags = {
+    Name               = local.cluster_name
+    Environment        = "example"
+    "user::CostCenter" = "terraform-registry"
+    department         = "operations"
+    InstanceScheduler  = true
+    Project            = "aws-rds"
+    Owner              = "hugo.almeida"
+    LayerName          = "cExample"
+    LayerId            = "cExample"
+  }
 }

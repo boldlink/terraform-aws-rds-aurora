@@ -1,7 +1,17 @@
 locals {
-  cluster_name     = "sample-cluster-serverless"
-  environment      = "test"
-  cidr_block       = "172.16.0.0/16"
-  database_subnets = cidrsubnets(local.cidr_block, 8, 8, 8)
-  azs              = flatten(data.aws_availability_zones.available.names)
+  cluster_name              = "sample-cluster-serverless"
+  supporting_resources_name = "terraform-aws-rds-aurora"
+  dns_suffix                = data.aws_partition.current.dns_suffix
+
+  tags = {
+    Name               = local.cluster_name
+    Environment        = "example"
+    "user::CostCenter" = "terraform-registry"
+    department         = "operations"
+    InstanceScheduler  = true
+    Project            = "aws-rds"
+    Owner              = "Boldlink"
+    LayerName          = "cExample"
+    LayerId            = "cExample"
+  }
 }

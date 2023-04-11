@@ -35,7 +35,7 @@ Examples available [`here`](https://github.com/boldlink/terraform-aws-rds-aurora
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.60.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.62.0 |
 
 ## Modules
 

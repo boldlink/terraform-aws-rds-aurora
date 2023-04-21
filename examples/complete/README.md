@@ -4,6 +4,7 @@
 [![Build Status](https://github.com/boldlink/terraform-aws-rds-aurora/actions/workflows/release.yaml/badge.svg)](https://github.com/boldlink/terraform-aws-rds-aurora/actions)
 [![Build Status](https://github.com/boldlink/terraform-aws-rds-aurora/actions/workflows/pre-commit.yaml/badge.svg)](https://github.com/boldlink/terraform-aws-rds-aurora/actions)
 [![Build Status](https://github.com/boldlink/terraform-aws-rds-aurora/actions/workflows/pr-labeler.yaml/badge.svg)](https://github.com/boldlink/terraform-aws-rds-aurora/actions)
+[![Build Status](https://github.com/boldlink/terraform-aws-rds-aurora/actions/workflows/module-examples-tests.yaml/badge.svg)](https://github.com/boldlink/terraform-aws-rds-aurora/actions)
 [![Build Status](https://github.com/boldlink/terraform-aws-rds-aurora/actions/workflows/checkov.yaml/badge.svg)](https://github.com/boldlink/terraform-aws-rds-aurora/actions)
 [![Build Status](https://github.com/boldlink/terraform-aws-rds-aurora/actions/workflows/auto-badge.yaml/badge.svg)](https://github.com/boldlink/terraform-aws-rds-aurora/actions)
 
@@ -24,9 +25,9 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.62.0 |
-| <a name="provider_aws.secondary"></a> [aws.secondary](#provider\_aws.secondary) | 4.62.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.5.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.63.0 |
+| <a name="provider_aws.secondary"></a> [aws.secondary](#provider\_aws.secondary) | 4.63.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
 
 ## Modules
 

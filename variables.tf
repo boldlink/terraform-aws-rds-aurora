@@ -108,9 +108,8 @@ variable "enabled_cloudwatch_logs_exports" {
 }
 
 variable "engine" {
-  description = "(Optional) The name of the database engine to be used for this DB cluster. Defaults to aurora. Valid Values: aurora, aurora-mysql, aurora-postgresql"
+  description = "(Required) The name of the database engine to be used for this DB cluster. Defaults to aurora. Valid Values: aurora, aurora-mysql, aurora-postgresql"
   type        = string
-  default     = null
 }
 
 variable "engine_mode" {

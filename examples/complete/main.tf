@@ -54,6 +54,7 @@ module "primary_cluster" {
   vpc_id                          = data.aws_vpc.supporting.id
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
   create_security_group           = true
+  tags                            = merge({ "Name" = local.cluster_name }, local.tags)
   ingress_rules = {
     default = {
       from_port = 3306
@@ -91,24 +92,27 @@ module "primary_cluster" {
   predefined_metric_type = "RDSReaderAverageCPUUtilization"
 }
 
+###
 module "secondary_vpc" {
-  source               = "boldlink/vpc/aws"
-  version              = "2.0.3"
-  cidr_block           = local.cidr_block
-  name                 = "${local.cluster_name}.sec"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
-  account              = data.aws_caller_identity.current.account_id
-  region               = data.aws_region.secondary.name
+  source                  = "boldlink/vpc/aws"
+  version                 = "3.0.4"
+  name                    = "${local.supporting_resources_name}.sec"
+  cidr_block              = local.cidr_block
+  enable_internal_subnets = true
 
-  ## database Subnets
-  database_subnets   = local.database_subnets
-  availability_zones = local.secondary_azs
+  internal_subnets = {
+    databases = {
+      cidrs = local.database_subnets
+    }
+  }
+  tags = local.tags
 
   providers = {
     aws = aws.secondary
   }
 }
+
+###
 
 module "secondary_cluster" {
   source = "../../"
@@ -130,11 +134,12 @@ module "secondary_cluster" {
   instance_class                      = "db.r5.2xlarge"
   cluster_identifier                  = "${local.cluster_name}-secondary"
   skip_final_snapshot                 = true
-  vpc_id                              = module.secondary_vpc.id
-  subnet_ids                          = flatten(module.secondary_vpc.database_subnet_id)
+  vpc_id                              = module.secondary_vpc.vpc_id
+  subnet_ids                          = flatten(local.internal_subnet_ids)
   enabled_cloudwatch_logs_exports     = ["audit", "error", "general", "slowquery"]
   create_db_subnet_group              = true
   create_security_group               = true
+  tags                                = merge({ "Name" = local.cluster_name }, local.tags)
   iam_database_authentication_enabled = true
 
   providers = {

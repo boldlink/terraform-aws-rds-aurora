@@ -22,7 +22,7 @@ module "rds_cluster" {
   instance_count                  = 1
   availability_zones              = data.aws_availability_zones.available.names
   engine                          = "aurora-postgresql"
-  engine_version                  = "11.12"
+  engine_version                  = "12.15"
   port                            = 5432
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.2xlarge"

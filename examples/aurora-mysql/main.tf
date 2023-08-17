@@ -33,6 +33,7 @@ module "rds_cluster" {
   storage_encrypted               = true
   kms_key_id                      = data.aws_kms_key.supporting.arn
   vpc_id                          = data.aws_vpc.supporting.id
+  tags                            = local.tags
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
   create_security_group           = true
   ingress_rules = {

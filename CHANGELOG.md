@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - feat: global cluster and serverless example.
 - feat: Slight re-arrangment.
 - feat: modified cluster names
-- feat: global cluster as a sub module.
+- feat: global cluster as a sub module.this rds aurora PRthis rds aurora PRthis rds aurora PR
 
 ## [1.0.1] - 2022-04-12
 ### Changes
@@ -62,7 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changes
 - feat: Initial commit
 
-[Unreleased]: https://github.com/boldlink/terraform-aws-rds-aurora/compare/1.0.4...HEAD
+[Unreleased]: https://github.com/boldlink/terraform-aws-rds-aurora/compare/1.0.5...HEAD
+[1.0.5]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.0.5
 [1.0.4]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.0.4
 [1.0.3]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.0.3
 [1.0.2]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.0.2

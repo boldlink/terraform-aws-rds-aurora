@@ -1,6 +1,6 @@
 module "aurora_vpc" {
   source                  = "boldlink/vpc/aws"
-  version                 = "3.0.2"
+  version                 = "3.0.4"
   name                    = local.name
   cidr_block              = local.cidr_block
   enable_internal_subnets = true

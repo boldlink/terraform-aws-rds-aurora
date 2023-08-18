@@ -5,7 +5,7 @@ locals {
     Name               = local.cluster_name
     Environment        = "example"
     "user::CostCenter" = "terraform-registry"
-    department         = "operations"
+    Department         = "operations"
     InstanceScheduler  = true
     Project            = "aws-rds"
     Owner              = "hugo.almeida"

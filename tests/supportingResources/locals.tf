@@ -6,7 +6,7 @@ locals {
   tags = {
     Environment        = "examples"
     "user::CostCenter" = "terraform-registry"
-    department         = "operations"
+    Department         = "operations"
     Project            = "aws-vpc"
     Owner              = "Boldlink"
     LayerName          = "cExample"

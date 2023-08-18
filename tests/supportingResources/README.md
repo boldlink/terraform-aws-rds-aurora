@@ -26,7 +26,7 @@ This stack builds:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.14.11 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >=4.15.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >=5.10.0 |
 
 ## Providers
 
@@ -36,7 +36,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_aurora_vpc"></a> [aurora\_vpc](#module\_aurora\_vpc) | boldlink/vpc/aws | 3.0.2 |
+| <a name="module_aurora_vpc"></a> [aurora\_vpc](#module\_aurora\_vpc) | boldlink/vpc/aws | 3.0.4 |
 | <a name="module_kms_key"></a> [kms\_key](#module\_kms\_key) | boldlink/kms/aws | n/a |
 
 ## Resources

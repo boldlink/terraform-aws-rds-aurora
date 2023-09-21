@@ -53,7 +53,6 @@ module "primary_cluster" {
   final_snapshot_identifier       = "${local.cluster_name}-snapshot"
   vpc_id                          = data.aws_vpc.supporting.id
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
-  create_security_group           = true
   tags                            = merge({ "Name" = local.cluster_name }, local.tags)
   ingress_rules = {
     default = {

@@ -137,7 +137,6 @@ module "secondary_cluster" {
   subnet_ids                          = flatten(local.internal_subnet_ids)
   enabled_cloudwatch_logs_exports     = ["audit", "error", "general", "slowquery"]
   create_db_subnet_group              = true
-  create_security_group               = true
   tags                                = merge({ "Name" = local.cluster_name }, local.tags)
   iam_database_authentication_enabled = true
 

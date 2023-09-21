@@ -10,13 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix: changes in place when rds security group is not created
 - fix: CKV_TF_1: "Ensure Terraform module sources use a commit hash"
 - fix: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
-- fix: CKV_AWS_313: "Ensure RDS cluster configured to copy tags to snapshots"
-- fix: CKV_AWS_313: "Ensure RDS cluster configured to copy tags to snapshots"
 - fix: CKV_AWS_354: "Ensure RDS Performance Insights are encrypted using KMS CMKs"
 - fix: CKV_AWS_324: "Ensure that RDS Cluster log capture is enabled"
 - fix: CKV_AWS_325: "Ensure that RDS Cluster audit logging is enabled for MySQL engine"
 - fix: CKV_AWS_326: "Ensure that RDS Aurora Clusters have backtracking enabled"
+
+## [1.1.0] - 2023-09-21
+- feat: added manage_master_user_password and master_user_secret_kms_key_id arguments
+- fix: CKV_AWS_313: "Ensure RDS cluster configured to copy tags to snapshots"
 - fix: CKV_AWS_353: "Ensure that RDS instances have performance insights enabled"
+- removed random_password resources in all examples.
+- fix: set module security group to always create by default
 
 ## [1.0.5] - 2023-08-17
 - fix: Updated vpc module version to resolve pre-commit alerts arising from derecated arguments

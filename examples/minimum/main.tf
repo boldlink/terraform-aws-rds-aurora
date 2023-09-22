@@ -8,12 +8,6 @@ resource "random_string" "master_username" {
   numeric = false
 }
 
-resource "random_password" "master_password" {
-  length  = 16
-  special = false
-  upper   = false
-}
-
 module "minimum" {
   source = "../../"
   #checkov:skip=CKV_AWS_96:Ensure all data stored in Aurora is securely encrypted at rest
@@ -30,7 +24,6 @@ module "minimum" {
   subnet_ids          = data.aws_subnets.database.ids
   cluster_identifier  = local.cluster_name
   master_username     = random_string.master_username.result
-  master_password     = random_password.master_password.result
   vpc_id              = data.aws_vpc.supporting.id
   skip_final_snapshot = true
   tags                = local.tags

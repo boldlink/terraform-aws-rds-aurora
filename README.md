@@ -34,7 +34,8 @@ resource "random_string" "master_username" {
 }
 
 module "minimum" {
-  source = "boldlink/rds-aurora/aws"
+  source              = "boldlink/rds-aurora/aws"
+  version             = "<latest_version_here>"
   instance_count      = 1
   availability_zones  = data.aws_availability_zones.available.names
   engine              = "aurora-mysql"

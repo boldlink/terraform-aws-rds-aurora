@@ -66,7 +66,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changes
 - feat: Initial commit
 
-[Unreleased]: https://github.com/boldlink/terraform-aws-rds-aurora/compare/1.0.5...HEAD
+[Unreleased]: https://github.com/boldlink/terraform-aws-rds-aurora/compare/1.1.0...HEAD
+
+[1.1.0]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.1.0
 [1.0.5]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.0.5
 [1.0.4]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.0.4
 [1.0.3]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.0.3

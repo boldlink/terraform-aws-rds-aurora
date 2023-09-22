@@ -18,8 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2023-09-21
 - feat: added manage_master_user_password and master_user_secret_kms_key_id arguments
 - fix: CKV_AWS_313: "Ensure RDS cluster configured to copy tags to snapshots"
-- fix: CKV_AWS_353: "Ensure that RDS instances have performance insights enabled"
-- removed random_password resources in all examples.
+- removed random_password resources in select examples.
 - fix: set module security group to always create by default
 
 ## [1.0.5] - 2023-08-17

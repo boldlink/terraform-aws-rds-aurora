@@ -9,12 +9,6 @@ resource "random_string" "master_username" {
   numeric = false
 }
 
-resource "random_password" "master_password" {
-  length  = 16
-  special = false
-  upper   = false
-}
-
 module "rds_cluster" {
   #checkov:skip=CKV_AWS_139:Ensure that RDS clusters have deletion protection enabled
   source                          = "../../"
@@ -28,14 +22,12 @@ module "rds_cluster" {
   subnet_ids                      = data.aws_subnets.database.ids
   cluster_identifier              = local.cluster_name
   master_username                 = random_string.master_username.result
-  master_password                 = random_password.master_password.result
   final_snapshot_identifier       = "${local.cluster_name}-snapshot"
   storage_encrypted               = true
   kms_key_id                      = data.aws_kms_key.supporting.arn
   vpc_id                          = data.aws_vpc.supporting.id
   tags                            = local.tags
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
-  create_security_group           = true
   ingress_rules = {
     default = {
       from_port = 3306

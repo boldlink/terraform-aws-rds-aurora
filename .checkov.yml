@@ -1,8 +1,6 @@
 skip-check:
 - CKV_TF_1 #"Ensure Terraform module sources use a commit hash"
 - CKV2_AWS_5 #"Ensure that Security Groups are attached to another resource"
-- CKV_AWS_313 #"Ensure RDS cluster configured to copy tags to snapshots"
-- CKV_AWS_313 #"Ensure RDS cluster configured to copy tags to snapshots"
 - CKV_AWS_354 #"Ensure RDS Performance Insights are encrypted using KMS CMKs"
 - CKV_AWS_324 #"Ensure that RDS Cluster log capture is enabled"
 - CKV_AWS_325 #"Ensure that RDS Cluster audit logging is enabled for MySQL engine"

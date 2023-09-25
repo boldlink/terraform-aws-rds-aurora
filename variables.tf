@@ -17,6 +17,18 @@ variable "master_password" {
   default     = null
 }
 
+variable "manage_master_user_password" {
+  description = "(Optional) Set to true to allow RDS to manage the master user password in Secrets Manager. Cannot be set if master_password is provided."
+  type        = bool
+  default     = true
+}
+
+variable "master_user_secret_kms_key_id" {
+  description = " (Optional) Amazon Web Services KMS key identifier is the key ARN, key ID, alias ARN, or alias name for the KMS key. To use a KMS key in a different Amazon Web Services account, specify the key ARN or alias ARN. If not specified, the default KMS key for your Amazon Web Services account is used."
+  type        = string
+  default     = null
+}
+
 variable "master_username" {
   description = "(Required unless a snapshot_identifier or replication_source_identifier is provided or unless a global_cluster_identifier is provided when the cluster is the 'secondary' cluster of a global database) Username for the master DB user."
   type        = string
@@ -68,7 +80,7 @@ variable "cluster_identifier" {
 variable "copy_tags_to_snapshot" {
   description = "(Optional, boolean) Copy all Cluster tags to snapshots. Default is `false`."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "db_cluster_parameter_group_name" {
@@ -373,7 +385,7 @@ variable "egress_rules" {
 
 variable "create_security_group" {
   description = "Whether to create a Security Group for RDS cluster."
-  default     = false
+  default     = true
   type        = bool
 }
 

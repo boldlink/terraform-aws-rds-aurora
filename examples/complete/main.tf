@@ -53,7 +53,6 @@ module "primary_cluster" {
   final_snapshot_identifier       = "${local.cluster_name}-snapshot"
   vpc_id                          = data.aws_vpc.supporting.id
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
-  create_security_group           = true
   tags                            = merge({ "Name" = local.cluster_name }, local.tags)
   ingress_rules = {
     default = {
@@ -138,7 +137,6 @@ module "secondary_cluster" {
   subnet_ids                          = flatten(local.internal_subnet_ids)
   enabled_cloudwatch_logs_exports     = ["audit", "error", "general", "slowquery"]
   create_db_subnet_group              = true
-  create_security_group               = true
   tags                                = merge({ "Name" = local.cluster_name }, local.tags)
   iam_database_authentication_enabled = true
 

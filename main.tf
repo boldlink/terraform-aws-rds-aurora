@@ -24,7 +24,9 @@ resource "aws_rds_cluster" "this" {
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
   iam_roles                           = var.iam_roles
   kms_key_id                          = var.storage_encrypted ? var.kms_key_id : null
-  master_password                     = var.primary_cluster ? var.master_password : null
+  master_password                     = var.primary_cluster || !var.manage_master_user_password ? var.master_password : null
+  manage_master_user_password         = var.master_password == null && var.global_cluster_identifier == null ? var.manage_master_user_password : null
+  master_user_secret_kms_key_id       = var.manage_master_user_password ? var.master_user_secret_kms_key_id : null
   master_username                     = var.primary_cluster ? var.master_username : null
   port                                = var.port
   preferred_backup_window             = var.preferred_backup_window

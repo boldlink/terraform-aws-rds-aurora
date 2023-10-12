@@ -237,22 +237,14 @@ variable "s3_import" {
 # Restore to point in time
 variable "restore_to_point_in_time" {
   description = "(Optional) Nested attribute for point in time restore. "
-  type = list(object({
-    source_cluster_identifier  = string
-    restore_type               = string
-    use_latest_restorable_time = bool
-  }))
-  default = []
+  type        = map(any)
+  default     = null
 }
 
-variable "timeouts" {
+variable "cluster_timeouts" {
   description = "aws_rds_cluster provides the following Timeouts configuration options: create, update, delete"
-  type = list(object({
-    create = string
-    update = string
-    delete = string
-  }))
-  default = []
+  type        = map(string)
+  default     = {}
 }
 
 variable "scaling_configuration" {
@@ -336,12 +328,8 @@ variable "ca_cert_identifier" {
 
 variable "instance_timeouts" {
   description = "aws_rds_cluster_instance provides the following Timeouts configuration options: create, update, delete"
-  type = list(object({
-    create = string
-    update = string
-    delete = string
-  }))
-  default = []
+  type        = map(string)
+  default     = {}
 }
 
 variable "db_parameter_group_name" {

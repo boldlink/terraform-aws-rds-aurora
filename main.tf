@@ -53,11 +53,12 @@ resource "aws_rds_cluster" "this" {
 
   # The DB cluster is created from the source DB cluster with the same configuration as the original DB cluster, except that the new DB cluster is created with the default DB security group. Thus, the following arguments should only be specified with the source DB cluster's respective values: database_name, master_username, storage_encrypted, replication_source_identifier, and source_region.
   dynamic "restore_to_point_in_time" {
-    for_each = var.restore_to_point_in_time
+    for_each = var.restore_to_point_in_time != null ? [var.restore_to_point_in_time] : []
     content {
       source_cluster_identifier  = lookup(restore_to_point_in_time.value, "source_cluster_identifier")
-      restore_type               = lookup(restore_to_point_in_time.value, "source_cluster_identifier", "copy-on-write")
-      use_latest_restorable_time = lookup(restore_to_point_in_time.value, "source_cluster_identifier", true)
+      restore_type               = lookup(restore_to_point_in_time.value, "restore_type", "copy-on-write")
+      use_latest_restorable_time = lookup(restore_to_point_in_time.value, "use_latest_restorable_time", true)
+      restore_to_time            = lookup(restore_to_point_in_time.value, "restore_to_time", null)
     }
   }
 
@@ -73,13 +74,10 @@ resource "aws_rds_cluster" "this" {
     }
   }
 
-  dynamic "timeouts" {
-    for_each = var.timeouts
-    content {
-      create = lookup(timeouts.value, "create", "120m")
-      update = lookup(timeouts.value, "update", "120m")
-      delete = lookup(timeouts.value, "delete", "120m")
-    }
+  timeouts {
+    create = lookup(var.cluster_timeouts, "create", "120m")
+    update = lookup(var.cluster_timeouts, "update", "120m")
+    delete = lookup(var.cluster_timeouts, "delete", "120m")
   }
 
   lifecycle {
@@ -114,13 +112,10 @@ resource "aws_rds_cluster_instance" "this" {
   copy_tags_to_snapshot                 = var.copy_tags_to_snapshot
   ca_cert_identifier                    = var.ca_cert_identifier
 
-  dynamic "timeouts" {
-    for_each = var.instance_timeouts
-    content {
-      create = lookup(timeouts.value, "create", "90m")
-      update = lookup(timeouts.value, "update", "90m")
-      delete = lookup(timeouts.value, "delete", "90m")
-    }
+  timeouts {
+    create = lookup(var.instance_timeouts, "create", "90m")
+    update = lookup(var.instance_timeouts, "update", "90m")
+    delete = lookup(var.instance_timeouts, "delete", "90m")
   }
 
   tags = var.tags
@@ -194,7 +189,8 @@ resource "aws_security_group_rule" "ingress" {
   from_port                = lookup(each.value, "from_port")
   to_port                  = lookup(each.value, "to_port")
   protocol                 = "tcp"
-  source_security_group_id = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
+  source_security_group_id = lookup(each.value, "security_group_id", null)
+  cidr_blocks              = lookup(each.value, "cidr_blocks", [])
   security_group_id        = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
 }
 
@@ -205,7 +201,7 @@ resource "aws_security_group_rule" "egress" {
   from_port         = lookup(each.value, "from_port")
   to_port           = lookup(each.value, "to_port")
   protocol          = "tcp"
-  cidr_blocks       = lookup(each.value, "cidr_blocks", null)
+  cidr_blocks       = lookup(each.value, "cidr_blocks", [])
   security_group_id = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
 }
 

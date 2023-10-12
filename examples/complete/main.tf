@@ -95,7 +95,7 @@ module "primary_cluster" {
   }
   instance_timeouts = {
     create = "30m"
-    delete = "30m"    
+    delete = "30m"
   }
 }
 

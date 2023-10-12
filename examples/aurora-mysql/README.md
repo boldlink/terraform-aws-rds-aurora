@@ -11,7 +11,7 @@
 
 [<img src="https://avatars.githubusercontent.com/u/25388280?s=200&v=4" width="96"/>](https://boldlink.io)
 
-# Terraform module usage example for aurora-mysql
+# Terraform module usage example for aurora-mysql and how to restore to a point in time
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -26,7 +26,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.17.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.13.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
 
 ## Modules
@@ -34,6 +34,7 @@
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_rds_cluster"></a> [rds\_cluster](#module\_rds\_cluster) | ../../ | n/a |
+| <a name="module_restored_cluster"></a> [restored\_cluster](#module\_restored\_cluster) | ../../ | n/a |
 
 ## Resources
 

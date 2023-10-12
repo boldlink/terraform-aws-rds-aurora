@@ -18,7 +18,7 @@ module "rds_cluster" {
   engine_version                  = "5.7"
   port                            = 3306
   engine_mode                     = "provisioned"
-  instance_class                  = "db.r5.2xlarge"
+  instance_class                  = "db.r5.large"
   subnet_ids                      = data.aws_subnets.database.ids
   cluster_identifier              = local.cluster_name
   master_username                 = random_string.master_username.result
@@ -30,8 +30,9 @@ module "rds_cluster" {
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
   ingress_rules = {
     default = {
-      from_port = 3306
-      to_port   = 3306
+      from_port   = 0
+      to_port     = 0
+      cidr_blocks = ["0.0.0.0/0"]
     }
 
   }
@@ -109,4 +110,54 @@ resource "aws_iam_role" "backup" {
 resource "aws_iam_role_policy_attachment" "backup" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
   role       = aws_iam_role.backup.name
+}
+
+
+### Restore to point in time
+module "restored_cluster" {
+  #checkov:skip=CKV_AWS_139:Ensure that RDS clusters have deletion protection enabled
+  #checkov:skip=CKV_AWS_118:Ensure that enhanced monitoring is enabled for Amazon RDS instances
+  #checkov:skip=CKV2_AWS_8:Ensure that RDS clusters has backup plan of AWS Backup
+  source                          = "../../"
+  instance_count                  = 1
+  availability_zones              = data.aws_availability_zones.available.names
+  engine                          = "aurora-mysql"
+  engine_version                  = "5.7"
+  port                            = 3306
+  engine_mode                     = "provisioned"
+  instance_class                  = "db.r5.large"
+  subnet_ids                      = data.aws_subnets.database.ids
+  cluster_identifier              = "restored-${local.cluster_name}"
+  master_username                 = random_string.master_username.result
+  final_snapshot_identifier       = "${local.cluster_name}-snapshot"
+  storage_encrypted               = true
+  kms_key_id                      = data.aws_kms_key.supporting.arn
+  vpc_id                          = data.aws_vpc.supporting.id
+  tags                            = local.tags
+  enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
+  copy_tags_to_snapshot           = true
+  ingress_rules = {
+    default = {
+      from_port = 3306
+      to_port   = 3306
+    }
+
+  }
+  egress_rules = {
+    default = {
+      from_port   = 0
+      to_port     = 0
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
+  skip_final_snapshot                 = true
+  iam_database_authentication_enabled = true
+  deletion_protection                 = false
+  family                              = "aurora-mysql5.7"
+  restore_to_point_in_time = {
+    source_cluster_identifier  = local.cluster_name
+    restore_type               = "copy-on-write"
+    use_latest_restorable_time = true
+  }
 }

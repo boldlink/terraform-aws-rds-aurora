@@ -89,6 +89,14 @@ module "primary_cluster" {
   scalable_dimension     = "rds:cluster:ReadReplicaCount"
   policy_type            = "TargetTrackingScaling"
   predefined_metric_type = "RDSReaderAverageCPUUtilization"
+  cluster_timeouts = {
+    create = "30m"
+    delete = "30m"
+  }
+  instance_timeouts = {
+    create = "30m"
+    delete = "30m"    
+  }
 }
 
 ###

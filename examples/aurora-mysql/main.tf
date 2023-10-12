@@ -140,6 +140,7 @@ module "restored_cluster" {
     default = {
       from_port = 3306
       to_port   = 3306
+      cidr_blocks = [local.vpc_cidr]
     }
 
   }

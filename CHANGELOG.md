@@ -18,9 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.1] - 2023-10-12
 - fix: restore to point in time dynamic block
+- added a restore to point in time example
 - fix: cluster and instance timeout blocks
 - fix: security group ingress rules block
-
 
 ## [1.1.0] - 2023-09-21
 - feat: added manage_master_user_password and master_user_secret_kms_key_id arguments
@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix: set module security group to always create by default
 
 ## [1.0.5] - 2023-08-17
-- fix: Updated vpc module version to resolve pre-commit alerts arising from derecated arguments
+- fix: Updated vpc module version to resolve pre-commit alerts arising from deprecated arguments
 - fix: updated engine versions
 - feat: added checkov exceptions in `checkov.yml` file
 
@@ -72,8 +72,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changes
 - feat: Initial commit
 
-[Unreleased]: https://github.com/boldlink/terraform-aws-rds-aurora/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/boldlink/terraform-aws-rds-aurora/compare/1.1.1...HEAD
 
+[1.1.1]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.1.1
 [1.1.0]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.1.0
 [1.0.5]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.0.5
 [1.0.4]: https://github.com/boldlink/terraform-aws-rds-aurora/releases/tag/1.0.4

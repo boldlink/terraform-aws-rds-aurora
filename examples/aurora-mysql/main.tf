@@ -24,6 +24,7 @@ module "rds_cluster" {
   master_username                 = random_string.master_username.result
   final_snapshot_identifier       = "${local.cluster_name}-snapshot"
   storage_encrypted               = true
+  backtrack_window                = 259200
   kms_key_id                      = data.aws_kms_key.supporting.arn
   vpc_id                          = data.aws_vpc.supporting.id
   tags                            = local.tags

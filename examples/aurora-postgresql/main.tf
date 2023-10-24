@@ -32,6 +32,7 @@ module "rds_cluster" {
     default = {
       from_port = 5432
       to_port   = 5432
+      cidr_blocks = [local.vpc_cidr]
     }
 
   }

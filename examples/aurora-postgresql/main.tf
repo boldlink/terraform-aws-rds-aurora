@@ -30,8 +30,8 @@ module "rds_cluster" {
   enabled_cloudwatch_logs_exports = ["postgresql"]
   ingress_rules = {
     default = {
-      from_port = 5432
-      to_port   = 5432
+      from_port   = 5432
+      to_port     = 5432
       cidr_blocks = [local.vpc_cidr]
     }
 

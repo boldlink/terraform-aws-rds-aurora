@@ -28,9 +28,9 @@ module "global_cluster" {
   source                    = "../../modules/global-cluster"
   create_global_cluster     = true
   global_cluster_identifier = local.global_cluster_identifier
-  engine                    = local.engine
-  engine_version            = local.engine_version
-  database_name             = "random_db"
+  engine                    = var.engine
+  engine_version            = var.engine_version
+  database_name             = "exampledb"
 }
 
 module "primary_cluster" {
@@ -41,11 +41,17 @@ module "primary_cluster" {
   instance_count                  = 1
   availability_zones              = data.aws_availability_zones.available.names
   global_cluster_identifier       = local.global_cluster_identifier
-  engine                          = local.engine
-  engine_version                  = local.engine_version
-  port                            = 3306
+  engine                          = var.engine
+  engine_version                  = var.engine_version
+  port                            = var.port
+  performance_insights_enabled    = true
+  ca_cert_identifier              = var.ca_cert_identifier
+  create_cluster_endpoint         = true
+  custom_endpoint_type            = "ANY"
+  min_capacity                    = 1
+  max_capacity                    = 3
   engine_mode                     = "provisioned"
-  instance_class                  = "db.r5.2xlarge"
+  instance_class                  = "db.r5.large"
   subnet_ids                      = data.aws_subnets.database.ids
   cluster_identifier              = "${local.cluster_name}-primary"
   master_username                 = random_string.master_username.result
@@ -53,11 +59,12 @@ module "primary_cluster" {
   final_snapshot_identifier       = "${local.cluster_name}-snapshot"
   vpc_id                          = data.aws_vpc.supporting.id
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
-  tags                            = merge({ "Name" = local.cluster_name }, local.tags)
+  tags                            = merge({ "Name" = local.cluster_name }, var.tags)
   ingress_rules = {
     default = {
-      from_port = 3306
-      to_port   = 3306
+      from_port   = var.port
+      to_port     = var.port
+      cidr_blocks = [local.cidr_block]
     }
   }
   egress_rules = {
@@ -73,6 +80,14 @@ module "primary_cluster" {
   deletion_protection                 = false
   create_db_subnet_group              = true
   create_monitoring_role              = true
+  allow_major_version_upgrade         = true
+  auto_minor_version_upgrade          = true
+  apply_immediately                   = true
+  publicly_accessible                 = false
+  backup_retention_period             = 30
+  enable_global_write_forwarding      = true
+  preferred_backup_window             = "01:00-03:00"
+  preferred_maintenance_window        = "Sun:03:00-Sun:06:00"
   monitoring_interval                 = 30
   assume_role_policy                  = data.aws_iam_policy_document.monitoring.json
   policy_arn                          = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
@@ -89,6 +104,8 @@ module "primary_cluster" {
   scalable_dimension     = "rds:cluster:ReadReplicaCount"
   policy_type            = "TargetTrackingScaling"
   predefined_metric_type = "RDSReaderAverageCPUUtilization"
+  scale_in_cooldown      = 500
+  scale_out_cooldown     = 500
   cluster_timeouts = {
     create = "30m"
     delete = "30m"
@@ -104,7 +121,7 @@ module "secondary_vpc" {
   source                  = "boldlink/vpc/aws"
   version                 = "3.0.4"
   name                    = "${local.supporting_resources_name}.sec"
-  cidr_block              = local.cidr_block
+  cidr_block              = local.secondary_cidr_block
   enable_internal_subnets = true
 
   internal_subnets = {
@@ -112,7 +129,7 @@ module "secondary_vpc" {
       cidrs = local.database_subnets
     }
   }
-  tags = local.tags
+  tags = var.tags
 
   providers = {
     aws = aws.secondary
@@ -134,18 +151,19 @@ module "secondary_cluster" {
   instance_count                      = 1
   availability_zones                  = data.aws_availability_zones.secondary.names
   global_cluster_identifier           = local.global_cluster_identifier
-  engine                              = local.engine
-  engine_version                      = local.engine_version
-  port                                = 3306
+  engine                              = var.engine
+  engine_version                      = var.engine_version
+  port                                = var.port
+  ca_cert_identifier                  = var.ca_cert_identifier
   engine_mode                         = "provisioned"
-  instance_class                      = "db.r5.2xlarge"
+  instance_class                      = "db.r5.large"
   cluster_identifier                  = "${local.cluster_name}-secondary"
   skip_final_snapshot                 = true
   vpc_id                              = module.secondary_vpc.vpc_id
   subnet_ids                          = flatten(local.internal_subnet_ids)
   enabled_cloudwatch_logs_exports     = ["audit", "error", "general", "slowquery"]
   create_db_subnet_group              = true
-  tags                                = merge({ "Name" = local.cluster_name }, local.tags)
+  tags                                = merge({ "Name" = local.cluster_name }, var.tags)
   iam_database_authentication_enabled = true
 
   providers = {
@@ -162,7 +180,7 @@ resource "aws_backup_vault" "this" {
   name          = "${local.cluster_name}-backup-vault"
   force_destroy = true
   kms_key_arn   = data.aws_kms_key.supporting.arn
-  tags          = local.tags
+  tags          = var.tags
 }
 
 resource "aws_backup_plan" "this" {

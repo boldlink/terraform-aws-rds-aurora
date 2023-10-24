@@ -14,13 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix: CKV_AWS_324: "Ensure that RDS Cluster log capture is enabled"
 - fix: CKV_AWS_325: "Ensure that RDS Cluster audit logging is enabled for MySQL engine"
 - fix: CKV_AWS_326: "Ensure that RDS Aurora Clusters have backtracking enabled"
-- feat: restore from s3 bucket example
+- Refactor cluster instances block to allow for unique configurations per instance.(use for each statement)
+- Restore from s3 bucket example
+- Replication example
+- parameter group example for cluster instances
+- Example IAM roles attached to cluster
+- Move values to variables.tf files in examples
 
 ## [1.1.1] - 2023-10-12
 - fix: restore to point in time dynamic block
 - added a restore to point in time example
 - fix: cluster and instance timeout blocks
 - fix: security group ingress rules block
+- fix cluster parameter group
 
 ## [1.1.0] - 2023-09-21
 - feat: added manage_master_user_password and master_user_secret_kms_key_id arguments

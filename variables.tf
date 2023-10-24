@@ -332,12 +332,6 @@ variable "instance_timeouts" {
   default     = {}
 }
 
-variable "db_parameter_group_name" {
-  description = "(Optional) The name of the DB parameter group to associate with this instance."
-  type        = string
-  default     = ""
-}
-
 # Subnet Group
 variable "subnet_ids" {
   description = "(Required) A list of VPC subnet IDs."
@@ -395,12 +389,6 @@ variable "family" {
   description = "(Required) The family of the DB cluster parameter group."
   type        = string
   default     = ""
-}
-
-variable "description" {
-  description = "(Optional) The description of the DB cluster parameter group. Defaults to `Managed by Terraform`."
-  type        = string
-  default     = "Managed by Terraform."
 }
 
 variable "cluster_parameters" {

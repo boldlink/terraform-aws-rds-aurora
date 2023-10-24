@@ -9,7 +9,7 @@ resource "aws_rds_cluster" "this" {
   cluster_identifier                  = var.cluster_identifier
   copy_tags_to_snapshot               = var.copy_tags_to_snapshot
   database_name                       = var.primary_cluster ? var.database_name : null
-  db_cluster_parameter_group_name     = var.db_cluster_parameter_group_name
+  db_cluster_parameter_group_name     = var.db_cluster_parameter_group_name != null ? var.db_cluster_parameter_group_name : try(aws_rds_cluster_parameter_group.this[0].id, null)
   db_instance_parameter_group_name    = var.allow_major_version_upgrade ? var.db_instance_parameter_group_name : null
   db_subnet_group_name                = var.create_db_subnet_group ? aws_db_subnet_group.this[0].id : var.db_subnet_group_name
   deletion_protection                 = var.deletion_protection
@@ -98,7 +98,7 @@ resource "aws_rds_cluster_instance" "this" {
   instance_class                        = var.instance_class
   publicly_accessible                   = var.publicly_accessible
   db_subnet_group_name                  = var.create_db_subnet_group ? aws_db_subnet_group.this[0].id : var.db_subnet_group_name
-  db_parameter_group_name               = var.db_parameter_group_name
+  db_parameter_group_name               = var.db_instance_parameter_group_name
   apply_immediately                     = var.apply_immediately
   monitoring_role_arn                   = var.create_monitoring_role && var.monitoring_interval > 0 ? aws_iam_role.this[0].arn : var.monitoring_role_arn
   monitoring_interval                   = var.monitoring_interval
@@ -136,7 +136,7 @@ resource "aws_rds_cluster_parameter_group" "this" {
   name        = var.name_prefix == null ? "${var.cluster_identifier}-parameter-group" : null
   name_prefix = var.name_prefix
   family      = var.family
-  description = var.description
+  description = "${var.cluster_identifier} parameter group"
   dynamic "parameter" {
     for_each = var.cluster_parameters
     content {
@@ -191,18 +191,19 @@ resource "aws_security_group_rule" "ingress" {
   protocol                 = "tcp"
   source_security_group_id = lookup(each.value, "security_group_id", null)
   cidr_blocks              = lookup(each.value, "cidr_blocks", [])
-  security_group_id        = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
+  security_group_id        = aws_security_group.this[0].id
 }
 
 resource "aws_security_group_rule" "egress" {
-  for_each          = var.egress_rules
-  type              = "egress"
-  description       = "Allow custom egress traffic"
-  from_port         = lookup(each.value, "from_port")
-  to_port           = lookup(each.value, "to_port")
-  protocol          = "tcp"
-  cidr_blocks       = lookup(each.value, "cidr_blocks", [])
-  security_group_id = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
+  for_each                 = var.egress_rules
+  type                     = "egress"
+  description              = "Allow custom egress traffic"
+  from_port                = lookup(each.value, "from_port")
+  to_port                  = lookup(each.value, "to_port")
+  protocol                 = "-1"
+  source_security_group_id = lookup(each.value, "security_group_id", null)
+  cidr_blocks              = lookup(each.value, "cidr_blocks", [])
+  security_group_id        = aws_security_group.this[0].id
 }
 
 # Autoscaling

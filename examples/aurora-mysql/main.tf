@@ -114,7 +114,7 @@ resource "aws_iam_role_policy_attachment" "backup" {
 }
 
 resource "time_sleep" "wait_60_seconds" {
-  depends_on = [module.rds_cluster]
+  depends_on      = [module.rds_cluster]
   create_duration = "60s"
 }
 
@@ -167,5 +167,5 @@ module "restored_cluster" {
     use_latest_restorable_time = true
   }
 
-  depends_on = [ module.rds_cluster, time_sleep.wait_60_seconds ]
+  depends_on = [module.rds_cluster, time_sleep.wait_60_seconds]
 }

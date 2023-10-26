@@ -113,6 +113,11 @@ resource "aws_iam_role_policy_attachment" "backup" {
   role       = aws_iam_role.backup.name
 }
 
+resource "time_sleep" "wait_60_seconds" {
+  depends_on = [module.rds_cluster]
+  create_duration = "60s"
+}
+
 
 ### Restore to point in time
 module "restored_cluster" {
@@ -136,7 +141,6 @@ module "restored_cluster" {
   vpc_id                          = data.aws_vpc.supporting.id
   tags                            = local.tags
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
-  copy_tags_to_snapshot           = true
   ingress_rules = {
     default = {
       from_port   = 3306
@@ -162,4 +166,6 @@ module "restored_cluster" {
     restore_type               = "copy-on-write"
     use_latest_restorable_time = true
   }
+
+  depends_on = [ module.rds_cluster, time_sleep.wait_60_seconds ]
 }

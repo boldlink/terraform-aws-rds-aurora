@@ -169,7 +169,7 @@ resource "aws_rds_cluster_endpoint" "this" {
   cluster_identifier          = aws_rds_cluster.this.id
   cluster_endpoint_identifier = lower(var.cluster_identifier)
   custom_endpoint_type        = var.custom_endpoint_type
-  static_members              = var.instance_count > 0 ? [aws_rds_cluster_instance.this[0].id] : []
+  static_members              = var.instance_count > 0 ? [aws_rds_cluster_instance.this[count.index].id] : []
   tags                        = var.tags
 }
 

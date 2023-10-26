@@ -20,7 +20,7 @@ module "minimum" {
   availability_zones  = data.aws_availability_zones.available.names
   engine              = "aurora-mysql"
   port                = 3306
-  instance_class      = "db.r5.2xlarge"
+  instance_class      = "db.r5.large"
   subnet_ids          = data.aws_subnets.database.ids
   cluster_identifier  = local.cluster_name
   master_username     = random_string.master_username.result

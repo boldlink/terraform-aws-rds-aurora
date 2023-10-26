@@ -11,5 +11,7 @@ terraform {
       source  = "hashicorp/random"
       version = ">= 3.1.0"
     }
+
+    time = ">= 0.9.1"
   }
 }

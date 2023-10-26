@@ -2,6 +2,7 @@ locals {
   cluster_name              = "sample-cluster-aurora-postgres"
   supporting_resources_name = "terraform-aws-rds-aurora"
   dns_suffix                = data.aws_partition.current.dns_suffix
+  vpc_cidr                  = data.aws_vpc.supporting.cidr_block
   tags = {
     Name               = local.cluster_name
     Environment        = "example"

@@ -19,7 +19,7 @@ module "rds_cluster" {
   engine_version                  = "12.15"
   port                            = 5432
   engine_mode                     = "provisioned"
-  instance_class                  = "db.r5.2xlarge"
+  instance_class                  = "db.r5.large"
   subnet_ids                      = data.aws_subnets.database.ids
   cluster_identifier              = local.cluster_name
   master_username                 = random_string.master_username.result
@@ -30,8 +30,9 @@ module "rds_cluster" {
   enabled_cloudwatch_logs_exports = ["postgresql"]
   ingress_rules = {
     default = {
-      from_port = 5432
-      to_port   = 5432
+      from_port   = 5432
+      to_port     = 5432
+      cidr_blocks = [local.vpc_cidr]
     }
 
   }
@@ -52,7 +53,7 @@ module "rds_cluster" {
   assume_role_policy                  = data.aws_iam_policy_document.monitoring.json
   policy_arn                          = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
   create_cluster_parameter_group      = true
-  family                              = "aurora-postgresql11"
+  family                              = "aurora-postgresql12"
   enable_autoscaling                  = true
   scalable_dimension                  = "rds:cluster:ReadReplicaCount"
   policy_type                         = "TargetTrackingScaling"

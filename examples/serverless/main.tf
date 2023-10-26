@@ -39,8 +39,9 @@ module "aurora_serverless" {
   create_security_group       = true
   ingress_rules = {
     default = {
-      from_port = 3306
-      to_port   = 3306
+      from_port   = 3306
+      to_port     = 3306
+      cidr_blocks = [local.vpc_cidr]
     }
 
   }

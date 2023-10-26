@@ -9,7 +9,7 @@ resource "aws_rds_cluster" "this" {
   cluster_identifier                  = var.cluster_identifier
   copy_tags_to_snapshot               = var.copy_tags_to_snapshot
   database_name                       = var.primary_cluster ? var.database_name : null
-  db_cluster_parameter_group_name     = var.db_cluster_parameter_group_name
+  db_cluster_parameter_group_name     = var.db_cluster_parameter_group_name != null ? var.db_cluster_parameter_group_name : try(aws_rds_cluster_parameter_group.this[0].id, null)
   db_instance_parameter_group_name    = var.allow_major_version_upgrade ? var.db_instance_parameter_group_name : null
   db_subnet_group_name                = var.create_db_subnet_group ? aws_db_subnet_group.this[0].id : var.db_subnet_group_name
   deletion_protection                 = var.deletion_protection
@@ -53,11 +53,12 @@ resource "aws_rds_cluster" "this" {
 
   # The DB cluster is created from the source DB cluster with the same configuration as the original DB cluster, except that the new DB cluster is created with the default DB security group. Thus, the following arguments should only be specified with the source DB cluster's respective values: database_name, master_username, storage_encrypted, replication_source_identifier, and source_region.
   dynamic "restore_to_point_in_time" {
-    for_each = var.restore_to_point_in_time
+    for_each = var.restore_to_point_in_time != null ? [var.restore_to_point_in_time] : []
     content {
       source_cluster_identifier  = lookup(restore_to_point_in_time.value, "source_cluster_identifier")
-      restore_type               = lookup(restore_to_point_in_time.value, "source_cluster_identifier", "copy-on-write")
-      use_latest_restorable_time = lookup(restore_to_point_in_time.value, "source_cluster_identifier", true)
+      restore_type               = lookup(restore_to_point_in_time.value, "restore_type", "copy-on-write")
+      use_latest_restorable_time = lookup(restore_to_point_in_time.value, "use_latest_restorable_time", true)
+      restore_to_time            = lookup(restore_to_point_in_time.value, "restore_to_time", null)
     }
   }
 
@@ -73,13 +74,10 @@ resource "aws_rds_cluster" "this" {
     }
   }
 
-  dynamic "timeouts" {
-    for_each = var.timeouts
-    content {
-      create = lookup(timeouts.value, "create", "120m")
-      update = lookup(timeouts.value, "update", "120m")
-      delete = lookup(timeouts.value, "delete", "120m")
-    }
+  timeouts {
+    create = lookup(var.cluster_timeouts, "create", "120m")
+    update = lookup(var.cluster_timeouts, "update", "120m")
+    delete = lookup(var.cluster_timeouts, "delete", "120m")
   }
 
   lifecycle {
@@ -100,7 +98,7 @@ resource "aws_rds_cluster_instance" "this" {
   instance_class                        = var.instance_class
   publicly_accessible                   = var.publicly_accessible
   db_subnet_group_name                  = var.create_db_subnet_group ? aws_db_subnet_group.this[0].id : var.db_subnet_group_name
-  db_parameter_group_name               = var.db_parameter_group_name
+  db_parameter_group_name               = var.db_instance_parameter_group_name
   apply_immediately                     = var.apply_immediately
   monitoring_role_arn                   = var.create_monitoring_role && var.monitoring_interval > 0 ? aws_iam_role.this[0].arn : var.monitoring_role_arn
   monitoring_interval                   = var.monitoring_interval
@@ -114,13 +112,10 @@ resource "aws_rds_cluster_instance" "this" {
   copy_tags_to_snapshot                 = var.copy_tags_to_snapshot
   ca_cert_identifier                    = var.ca_cert_identifier
 
-  dynamic "timeouts" {
-    for_each = var.instance_timeouts
-    content {
-      create = lookup(timeouts.value, "create", "90m")
-      update = lookup(timeouts.value, "update", "90m")
-      delete = lookup(timeouts.value, "delete", "90m")
-    }
+  timeouts {
+    create = lookup(var.instance_timeouts, "create", "90m")
+    update = lookup(var.instance_timeouts, "update", "90m")
+    delete = lookup(var.instance_timeouts, "delete", "90m")
   }
 
   tags = var.tags
@@ -141,7 +136,7 @@ resource "aws_rds_cluster_parameter_group" "this" {
   name        = var.name_prefix == null ? "${var.cluster_identifier}-parameter-group" : null
   name_prefix = var.name_prefix
   family      = var.family
-  description = var.description
+  description = "${var.cluster_identifier} parameter group"
   dynamic "parameter" {
     for_each = var.cluster_parameters
     content {
@@ -174,7 +169,7 @@ resource "aws_rds_cluster_endpoint" "this" {
   cluster_identifier          = aws_rds_cluster.this.id
   cluster_endpoint_identifier = lower(var.cluster_identifier)
   custom_endpoint_type        = var.custom_endpoint_type
-  static_members              = var.instance_count > 0 ? [aws_rds_cluster_instance.this[0].id] : []
+  static_members              = var.instance_count > 0 ? [aws_rds_cluster_instance.this[count.index].id] : []
   tags                        = var.tags
 }
 
@@ -194,19 +189,21 @@ resource "aws_security_group_rule" "ingress" {
   from_port                = lookup(each.value, "from_port")
   to_port                  = lookup(each.value, "to_port")
   protocol                 = "tcp"
-  source_security_group_id = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
-  security_group_id        = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
+  source_security_group_id = lookup(each.value, "security_group_id", null)
+  cidr_blocks              = lookup(each.value, "cidr_blocks", [])
+  security_group_id        = aws_security_group.this[0].id
 }
 
 resource "aws_security_group_rule" "egress" {
-  for_each          = var.egress_rules
-  type              = "egress"
-  description       = "Allow custom egress traffic"
-  from_port         = lookup(each.value, "from_port")
-  to_port           = lookup(each.value, "to_port")
-  protocol          = "tcp"
-  cidr_blocks       = lookup(each.value, "cidr_blocks", null)
-  security_group_id = lookup(each.value, "security_group_id", aws_security_group.this[0].id)
+  for_each                 = var.egress_rules
+  type                     = "egress"
+  description              = "Allow custom egress traffic"
+  from_port                = lookup(each.value, "from_port")
+  to_port                  = lookup(each.value, "to_port")
+  protocol                 = "-1"
+  source_security_group_id = lookup(each.value, "security_group_id", null)
+  cidr_blocks              = lookup(each.value, "cidr_blocks", [])
+  security_group_id        = aws_security_group.this[0].id
 }
 
 # Autoscaling

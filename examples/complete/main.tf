@@ -165,6 +165,7 @@ module "secondary_cluster" {
   create_db_subnet_group              = true
   tags                                = merge({ "Name" = local.cluster_name }, var.tags)
   iam_database_authentication_enabled = true
+  replication_source_identifier       = module.primary_cluster.arn
 
   providers = {
     aws = aws.secondary

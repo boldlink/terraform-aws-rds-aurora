@@ -393,11 +393,7 @@ variable "family" {
 
 variable "cluster_parameters" {
   description = "(Optional) A list of DB parameters to apply. Note that parameters may differ from a family to an other."
-  type = list(object({
-    name         = string
-    value        = string
-    apply_method = string
-  }))
+  type = list(any)
   default = []
 }
 
@@ -493,4 +489,10 @@ variable "scale_out_cooldown" {
   description = "(Optional) The amount of time, in seconds, after a scale out activity completes before another scale out activity can start."
   type        = number
   default     = 300
+}
+
+variable "vpc_security_group_ids" {
+  description = "List of VPC security groups to associate"
+  type        = list(string)
+  default     = []
 }

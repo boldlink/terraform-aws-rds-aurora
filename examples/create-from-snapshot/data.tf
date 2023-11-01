@@ -15,16 +15,6 @@ data "aws_iam_policy_document" "monitoring" {
   }
 }
 
-data "aws_iam_policy_document" "backup" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    principals {
-      type        = "Service"
-      identifiers = ["backup.${local.dns_suffix}"]
-    }
-  }
-}
-
 data "aws_vpc" "supporting" {
   filter {
     name   = "tag:Name"

@@ -22,19 +22,19 @@ resource "aws_security_group" "external" {
   vpc_id      = data.aws_vpc.supporting.id
 
   ingress {
-    description      = "Ingress from VPC"
-    from_port        = 3306
-    to_port          = 3306
-    protocol         = "tcp"
-    cidr_blocks      = [local.vpc_cidr]
+    description = "Ingress from VPC"
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = [local.vpc_cidr]
   }
 
   egress {
-    description      = "Example Egress rule"
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "Example Egress rule"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -59,7 +59,7 @@ module "rds_cluster" {
   vpc_id                          = data.aws_vpc.supporting.id
   tags                            = local.tags
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
-  vpc_security_group_ids          = [ aws_security_group.external.id ]
+  vpc_security_group_ids          = [aws_security_group.external.id]
   ingress_rules = {
     default = {
       from_port   = 0
@@ -86,7 +86,7 @@ module "rds_cluster" {
 
 resource "aws_db_cluster_snapshot" "example" {
   #checkov:skip=CKV_AWS_146: "Ensure that RDS database cluster snapshot is encrypted"
-  db_cluster_identifier         = module.rds_cluster.id
+  db_cluster_identifier          = module.rds_cluster.id
   db_cluster_snapshot_identifier = "${local.cluster_name}-snapshot"
   tags                           = local.tags
 }

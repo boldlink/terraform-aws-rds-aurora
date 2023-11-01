@@ -228,11 +228,12 @@ variable "tags" {
 
 #S3 import
 
-variable "s3_import" {
+/*variable "s3_import" {
   description = " Requires that the S3 bucket be in the same region as the RDS cluster you're trying to create."
   type        = map(string)
   default     = null
 }
+*/
 
 # Restore to point in time
 variable "restore_to_point_in_time" {
@@ -393,8 +394,8 @@ variable "family" {
 
 variable "cluster_parameters" {
   description = "(Optional) A list of DB parameters to apply. Note that parameters may differ from a family to an other."
-  type = list(any)
-  default = []
+  type        = list(any)
+  default     = []
 }
 
 # Enhanced Monitoring

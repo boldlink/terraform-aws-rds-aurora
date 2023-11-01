@@ -25,7 +25,7 @@ resource "aws_rds_cluster" "this" {
   iam_roles                           = var.iam_roles
   kms_key_id                          = var.storage_encrypted ? var.kms_key_id : null
   master_password                     = var.primary_cluster || !var.manage_master_user_password || var.snapshot_identifier == null || var.replication_source_identifier == null ? var.master_password : null
-  manage_master_user_password         = var.master_password == null && var.global_cluster_identifier == null  ? var.manage_master_user_password : null
+  manage_master_user_password         = var.master_password == null && var.global_cluster_identifier == null ? var.manage_master_user_password : null
   master_user_secret_kms_key_id       = var.manage_master_user_password ? var.master_user_secret_kms_key_id : null
   master_username                     = var.primary_cluster ? var.master_username : null
   port                                = var.port
@@ -39,6 +39,7 @@ resource "aws_rds_cluster" "this" {
   tags                                = var.tags
   vpc_security_group_ids              = local.vpc_security_group_ids == null ? null : compact(concat(aws_security_group.this.*.id, local.vpc_security_group_ids))
 
+/*
   # RDS Aurora Serverless does not support loading data from S3, so its not possible to directly use engine_mode set to serverless with s3_import.
   dynamic "s3_import" {
     for_each = var.engine_mode != "serverless" && var.s3_import != null ? [var.s3_import] : []
@@ -50,8 +51,8 @@ resource "aws_rds_cluster" "this" {
       source_engine_version = s3_import.value.source_engine_version
     }
   }
+*/
 
-/*
   # The DB cluster is created from the source DB cluster with the same configuration as the original DB cluster, except that the new DB cluster is created with the default DB security group. Thus, the following arguments should only be specified with the source DB cluster's respective values: database_name, master_username, storage_encrypted, replication_source_identifier, and source_region.
   dynamic "restore_to_point_in_time" {
     for_each = var.restore_to_point_in_time != null ? [var.restore_to_point_in_time] : []
@@ -62,7 +63,7 @@ resource "aws_rds_cluster" "this" {
       restore_to_time            = lookup(restore_to_point_in_time.value, "restore_to_time", null)
     }
   }
-*/
+
 
   # scaling_configuration configuration is only valid when engine_mode is set to serverless.
   dynamic "scaling_configuration" {

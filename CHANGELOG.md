@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replication in complete example
 - An example that creates a cluster from a snapshot
 - feat: external security groups option
-- Commented out restore from s3 block since the cluster gets stuck at `Preparing-data-migration`. 
+- Commented out restore from s3 block since the cluster gets stuck at `Preparing-data-migration`.
 
 ## [1.1.1] - 2023-10-12
 - fix: restore to point in time dynamic block

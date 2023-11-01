@@ -39,7 +39,7 @@ resource "aws_rds_cluster" "this" {
   tags                                = var.tags
   vpc_security_group_ids              = local.vpc_security_group_ids == null ? null : compact(concat(aws_security_group.this.*.id, local.vpc_security_group_ids))
 
-/*
+  /*
   # RDS Aurora Serverless does not support loading data from S3, so its not possible to directly use engine_mode set to serverless with s3_import.
   dynamic "s3_import" {
     for_each = var.engine_mode != "serverless" && var.s3_import != null ? [var.s3_import] : []

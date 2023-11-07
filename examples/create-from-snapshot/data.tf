@@ -1,7 +1,6 @@
 
 data "aws_partition" "current" {}
 
-
 data "aws_iam_policy_document" "monitoring" {
   statement {
     actions = [
@@ -21,7 +20,6 @@ data "aws_vpc" "supporting" {
     values = [local.supporting_resources_name]
   }
 }
-
 
 data "aws_subnets" "database" {
   filter {

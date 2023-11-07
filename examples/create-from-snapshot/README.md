@@ -12,6 +12,8 @@
 [<img src="https://avatars.githubusercontent.com/u/25388280?s=200&v=4" width="96"/>](https://boldlink.io)
 
 # Terraform module usage example for creating a cluster from a snapshot
+- This example creates a new rds cluster by restoring from a database cluster snapshot.
+- Some of the options enabled in this example are for testing purposes, make sure you follow your own requirements for a valid production deployment
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements

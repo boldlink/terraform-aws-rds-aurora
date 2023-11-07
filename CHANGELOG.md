@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move values to variables.tf files in examples
 
 ## [1.2.0] - 2023-10-31
+- modified the condition in which a master password is required.
 - Replication in complete example
 - An example that creates a cluster from a snapshot
 - feat: external security groups option

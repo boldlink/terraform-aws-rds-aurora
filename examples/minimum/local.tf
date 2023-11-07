@@ -1,5 +1,5 @@
 locals {
-  cluster_name              = "minimum-cluster-aurora-mysql"
+  cluster_name              = "example-minimum-aurora-cluster"
   supporting_resources_name = "terraform-aws-rds-aurora"
   tags = {
     Name               = local.cluster_name

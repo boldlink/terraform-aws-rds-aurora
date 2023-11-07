@@ -20,9 +20,9 @@ module "rds_cluster" {
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.large"
   subnet_ids                      = data.aws_subnets.database.ids
-  cluster_identifier              = local.cluster_name
+  cluster_identifier              = var.cluster_identifier
   master_username                 = random_string.master_username.result
-  final_snapshot_identifier       = "${local.cluster_name}-snapshot"
+  final_snapshot_identifier       = "${var.cluster_identifier}-snapshot"
   storage_encrypted               = true
   backtrack_window                = 259200
   kms_key_id                      = data.aws_kms_key.supporting.arn
@@ -69,16 +69,16 @@ module "rds_cluster" {
 }
 
 resource "aws_backup_vault" "this" {
-  name          = "${local.cluster_name}-backup-vault"
+  name          = "${var.cluster_identifier}-backup-vault"
   force_destroy = true
   kms_key_arn   = data.aws_kms_key.supporting.arn
   tags          = local.tags
 }
 
 resource "aws_backup_plan" "this" {
-  name = "${local.cluster_name}-backup-plan"
+  name = "${var.cluster_identifier}-backup-plan"
   rule {
-    rule_name         = "${local.cluster_name}-backup-rule"
+    rule_name         = "${var.cluster_identifier}-backup-rule"
     target_vault_name = aws_backup_vault.this.name
     schedule          = "cron(0 12 * * ? *)"
 
@@ -90,7 +90,7 @@ resource "aws_backup_plan" "this" {
 
 resource "aws_backup_selection" "this" {
   iam_role_arn = aws_iam_role.backup.arn
-  name         = "${local.cluster_name}-backup-selection"
+  name         = "${var.cluster_identifier}-backup-selection"
   plan_id      = aws_backup_plan.this.id
 
   resources = [
@@ -104,7 +104,7 @@ resource "aws_backup_selection" "this" {
 }
 
 resource "aws_iam_role" "backup" {
-  name               = "${local.cluster_name}-backup-selection-role"
+  name               = "${var.cluster_identifier}-backup-selection-role"
   assume_role_policy = data.aws_iam_policy_document.backup.json
 }
 
@@ -133,9 +133,9 @@ module "restored_cluster" {
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.large"
   subnet_ids                      = data.aws_subnets.database.ids
-  cluster_identifier              = "restored-${local.cluster_name}"
+  cluster_identifier              = "restored-${var.cluster_identifier}"
   master_username                 = random_string.master_username.result
-  final_snapshot_identifier       = "${local.cluster_name}-snapshot"
+  final_snapshot_identifier       = "${var.cluster_identifier}-snapshot"
   storage_encrypted               = true
   kms_key_id                      = data.aws_kms_key.supporting.arn
   vpc_id                          = data.aws_vpc.supporting.id
@@ -162,7 +162,7 @@ module "restored_cluster" {
   deletion_protection                 = false
   family                              = "aurora-mysql5.7"
   restore_to_point_in_time = {
-    source_cluster_identifier  = local.cluster_name
+    source_cluster_identifier  = var.cluster_identifier
     restore_type               = "copy-on-write"
     use_latest_restorable_time = true
   }

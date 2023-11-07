@@ -7,7 +7,7 @@ variable "cluster_identifier" {
 variable "tags" {
   description = "A map of tags to assign to the resources"
   type        = map(string)
-  default     = {
+  default = {
     Environment        = "example"
     "user::CostCenter" = "terraform-registry"
     Department         = "operations"
@@ -18,4 +18,3 @@ variable "tags" {
     LayerId            = "cExample"
   }
 }
-

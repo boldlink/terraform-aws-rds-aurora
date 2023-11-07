@@ -20,7 +20,6 @@ resource "aws_security_group" "external" {
   name        = "${local.cluster_name}-sg-external"
   description = "Allow rds traffic"
   vpc_id      = data.aws_vpc.supporting.id
-
   ingress {
     description = "Ingress from VPC"
     from_port   = 3306
@@ -28,7 +27,6 @@ resource "aws_security_group" "external" {
     protocol    = "tcp"
     cidr_blocks = [local.vpc_cidr]
   }
-
   egress {
     description = "Example Egress rule"
     from_port   = 0
@@ -36,6 +34,7 @@ resource "aws_security_group" "external" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = local.tags
 }
 
 module "rds_cluster" {

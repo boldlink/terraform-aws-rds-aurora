@@ -212,6 +212,7 @@ resource "aws_appautoscaling_target" "replicas" {
   resource_id        = "cluster:${aws_rds_cluster.this.id}"
   min_capacity       = var.min_capacity
   max_capacity       = var.max_capacity
+  tags               = var.tags
 }
 
 resource "aws_appautoscaling_policy" "this" {

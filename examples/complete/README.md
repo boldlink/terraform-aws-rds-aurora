@@ -12,8 +12,8 @@
 [<img src="https://avatars.githubusercontent.com/u/25388280?s=200&v=4" width="96"/>](https://boldlink.io)
 
 # Terraform module usage complete example with aurora global cluster
-- This example creates a global rds cluster containing a primary and secondary cluster.
-- Some of the options enabled in this example are for testing purposes, make sure you follow your own requirements for a valid
+- This example creates a global rds cluster containing a primary cluster and a secondary replica cluster.
+- Some of the options enabled in this example are for testing purposes, make sure you follow your own requirements for a valid production deployment
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements

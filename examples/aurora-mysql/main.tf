@@ -15,7 +15,7 @@ module "rds_cluster" {
   instance_count                  = 1
   availability_zones              = data.aws_availability_zones.available.names
   engine                          = "aurora-mysql"
-  engine_version                  = "5.7"
+  engine_version                  = var.engine_version
   port                            = 3306
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.large"
@@ -128,7 +128,7 @@ module "restored_cluster" {
   instance_count                  = 1
   availability_zones              = data.aws_availability_zones.available.names
   engine                          = "aurora-mysql"
-  engine_version                  = "5.7"
+  engine_version                  = var.engine_version
   port                            = 3306
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.large"
@@ -137,6 +137,7 @@ module "restored_cluster" {
   master_username                 = random_string.master_username.result
   final_snapshot_identifier       = "${var.cluster_identifier}-snapshot"
   storage_encrypted               = true
+  copy_tags_to_snapshot           = false
   kms_key_id                      = data.aws_kms_key.supporting.arn
   vpc_id                          = data.aws_vpc.supporting.id
   tags                            = local.tags

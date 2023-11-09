@@ -45,7 +45,7 @@ module "rds_cluster" {
   instance_count                  = 1
   availability_zones              = data.aws_availability_zones.available.names
   engine                          = "aurora-mysql"
-  engine_version                  = "5.7"
+  engine_version                  = var.engine_version
   port                            = 3306
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.large"
@@ -102,7 +102,7 @@ module "snapshot_cluster" {
   instance_count                  = 1
   availability_zones              = data.aws_availability_zones.available.names
   engine                          = "aurora-mysql"
-  engine_version                  = "5.7"
+  engine_version                  = var.engine_version
   port                            = 3306
   engine_mode                     = "provisioned"
   instance_class                  = "db.r5.large"

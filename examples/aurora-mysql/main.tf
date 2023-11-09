@@ -124,6 +124,7 @@ module "restored_cluster" {
   #checkov:skip=CKV_AWS_139:Ensure that RDS clusters have deletion protection enabled
   #checkov:skip=CKV_AWS_118:Ensure that enhanced monitoring is enabled for Amazon RDS instances
   #checkov:skip=CKV2_AWS_8:Ensure that RDS clusters has backup plan of AWS Backup
+  #checkov:skip=CKV_AWS_313:Ensure RDS cluster configured to copy tags to snapshots
   source                          = "../../"
   instance_count                  = 1
   availability_zones              = data.aws_availability_zones.available.names

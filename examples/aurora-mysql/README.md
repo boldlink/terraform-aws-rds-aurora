@@ -62,6 +62,7 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_identifier"></a> [cluster\_identifier](#input\_cluster\_identifier) | The cluster identifier. If omitted, Terraform will assign a random, unique identifier. | `string` | `"example-aurora-mysql-cluster"` | no |
+| <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | (Optional) The database engine version. Updating this argument results in an outage. The actual engine version used is returned in the attribute engine\_version\_actual. | `string` | `"5.7.mysql_aurora.2.11.4"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to the resources | `map(string)` | <pre>{<br>  "Department": "operations",<br>  "Environment": "example",<br>  "InstanceScheduler": true,<br>  "LayerId": "cExample",<br>  "LayerName": "cExample",<br>  "Owner": "Boldlink",<br>  "Project": "aws-rds",<br>  "user::CostCenter": "terraform-registry"<br>}</pre> | no |
 
 ## Outputs

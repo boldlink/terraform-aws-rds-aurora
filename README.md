@@ -70,7 +70,7 @@ module "minimum" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.22.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.24.0 |
 
 ## Modules
 
@@ -108,7 +108,7 @@ No modules.
 | <a name="input_ca_cert_identifier"></a> [ca\_cert\_identifier](#input\_ca\_cert\_identifier) | (Optional) The identifier of the CA certificate for the DB instance. | `string` | `null` | no |
 | <a name="input_cluster_identifier"></a> [cluster\_identifier](#input\_cluster\_identifier) | (Optional, Forces new resources) The cluster identifier. If omitted, Terraform will assign a random, unique identifier. | `string` | `null` | no |
 | <a name="input_cluster_identifier_prefix"></a> [cluster\_identifier\_prefix](#input\_cluster\_identifier\_prefix) | (Optional, Forces new resource) Creates a unique cluster identifier beginning with the specified prefix. Conflicts with cluster\_identifier. | `string` | `null` | no |
-| <a name="input_cluster_parameters"></a> [cluster\_parameters](#input\_cluster\_parameters) | (Optional) A list of DB parameters to apply. Note that parameters may differ from a family to an other. | <pre>list(object({<br>    name         = string<br>    value        = string<br>    apply_method = string<br>  }))</pre> | `[]` | no |
+| <a name="input_cluster_parameters"></a> [cluster\_parameters](#input\_cluster\_parameters) | (Optional) A list of DB parameters to apply. Note that parameters may differ from a family to an other. | `list(any)` | `[]` | no |
 | <a name="input_cluster_timeouts"></a> [cluster\_timeouts](#input\_cluster\_timeouts) | aws\_rds\_cluster provides the following Timeouts configuration options: create, update, delete | `map(string)` | `{}` | no |
 | <a name="input_copy_tags_to_snapshot"></a> [copy\_tags\_to\_snapshot](#input\_copy\_tags\_to\_snapshot) | (Optional, boolean) Copy all Cluster tags to snapshots. Default is `false`. | `bool` | `true` | no |
 | <a name="input_create_cluster_endpoint"></a> [create\_cluster\_endpoint](#input\_create\_cluster\_endpoint) | Whether to create a cluster endpoint or not | `bool` | `false` | no |
@@ -163,7 +163,6 @@ No modules.
 | <a name="input_publicly_accessible"></a> [publicly\_accessible](#input\_publicly\_accessible) | (Optional) Bool to control if instance is publicly accessible. Default false. | `bool` | `false` | no |
 | <a name="input_replication_source_identifier"></a> [replication\_source\_identifier](#input\_replication\_source\_identifier) | (Optional) ARN of a source DB cluster or DB instance if this DB cluster is to be created as a Read Replica. | `string` | `null` | no |
 | <a name="input_restore_to_point_in_time"></a> [restore\_to\_point\_in\_time](#input\_restore\_to\_point\_in\_time) | (Optional) Nested attribute for point in time restore. | `map(any)` | `null` | no |
-| <a name="input_s3_import"></a> [s3\_import](#input\_s3\_import) | Requires that the S3 bucket be in the same region as the RDS cluster you're trying to create. | `map(string)` | `null` | no |
 | <a name="input_scalable_dimension"></a> [scalable\_dimension](#input\_scalable\_dimension) | (Required) The scalable dimension of the scalable target. | `string` | `""` | no |
 | <a name="input_scale_in_cooldown"></a> [scale\_in\_cooldown](#input\_scale\_in\_cooldown) | (Optional) The amount of time, in seconds, after a scale in activity completes before another scale in activity can start. | `number` | `300` | no |
 | <a name="input_scale_out_cooldown"></a> [scale\_out\_cooldown](#input\_scale\_out\_cooldown) | (Optional) The amount of time, in seconds, after a scale out activity completes before another scale out activity can start. | `number` | `300` | no |
@@ -177,6 +176,7 @@ No modules.
 | <a name="input_tags"></a> [tags](#input\_tags) | (Optional)A map of tags to assign to the resources | `map(string)` | `{}` | no |
 | <a name="input_target_value"></a> [target\_value](#input\_target\_value) | (Required) The target value for the metric. | `number` | `75` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | (Optional, Forces new resource) VPC ID | `string` | `null` | no |
+| <a name="input_vpc_security_group_ids"></a> [vpc\_security\_group\_ids](#input\_vpc\_security\_group\_ids) | List of VPC security groups to associate | `list(string)` | `[]` | no |
 
 ## Outputs
 

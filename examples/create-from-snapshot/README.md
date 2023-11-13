@@ -11,7 +11,9 @@
 
 [<img src="https://avatars.githubusercontent.com/u/25388280?s=200&v=4" width="96"/>](https://boldlink.io)
 
-# Terraform module usage example showing the least configuration
+# Terraform module usage example for creating a cluster from a snapshot
+- This example creates a new rds cluster by restoring from a database cluster snapshot.
+- Some of the options enabled in this example are for testing purposes, make sure you follow your own requirements for a valid production deployment
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -21,6 +23,7 @@
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.14.11 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.10.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.1.0 |
+| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9.1 |
 
 ## Providers
 
@@ -33,20 +36,29 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_minimum"></a> [minimum](#module\_minimum) | ../../ | n/a |
+| <a name="module_rds_cluster"></a> [rds\_cluster](#module\_rds\_cluster) | ../../ | n/a |
+| <a name="module_snapshot_cluster"></a> [snapshot\_cluster](#module\_snapshot\_cluster) | ../../ | n/a |
 
 ## Resources
 
 | Name | Type |
 |------|------|
+| [aws_db_cluster_snapshot.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_cluster_snapshot) | resource |
+| [aws_security_group.external](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [random_password.master_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_string.master_username](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
+| [aws_iam_policy_document.monitoring](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_kms_key.supporting](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/kms_key) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [aws_subnets.database](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnets) | data source |
 | [aws_vpc.supporting](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
 
 ## Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | (Optional) The database engine version. Updating this argument results in an outage. The actual engine version used is returned in the attribute engine\_version\_actual. | `string` | `"5.7.mysql_aurora.2.11.4"` | no |
 
 ## Outputs
 

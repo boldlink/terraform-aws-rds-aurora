@@ -72,8 +72,8 @@ module "aurora_serverless" {
   ]
   scaling_configuration = {
     auto_pause               = true
-    max_capacity             = 256
-    min_capacity             = 2
+    max_capacity             = 4
+    min_capacity             = 1
     seconds_until_auto_pause = 300
     timeout_action           = "ForceApplyCapacityChange"
   }

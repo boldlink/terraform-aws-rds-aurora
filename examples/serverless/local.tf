@@ -1,5 +1,5 @@
 locals {
-  cluster_name              = "sample-cluster-serverless"
+  cluster_name              = "example-serverless-cluster"
   supporting_resources_name = "terraform-aws-rds-aurora"
   dns_suffix                = data.aws_partition.current.dns_suffix
   vpc_cidr                  = data.aws_vpc.supporting.cidr_block

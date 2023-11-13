@@ -1,6 +1,8 @@
 locals {
-  cluster_name              = "example-minimum-aurora-cluster"
+  cluster_name              = "example-snapshot-cluster"
   supporting_resources_name = "terraform-aws-rds-aurora"
+  dns_suffix                = data.aws_partition.current.dns_suffix
+  vpc_cidr                  = data.aws_vpc.supporting.cidr_block
   tags = {
     Name               = local.cluster_name
     Environment        = "example"
@@ -8,7 +10,7 @@ locals {
     Department         = "operations"
     InstanceScheduler  = true
     Project            = "aws-rds"
-    Owner              = "hugo.almeida"
+    Owner              = "Boldlink"
     LayerName          = "cExample"
     LayerId            = "cExample"
   }

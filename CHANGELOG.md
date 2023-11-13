@@ -16,10 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix: CKV_AWS_326: "Ensure that RDS Aurora Clusters have backtracking enabled"
 - Refactor cluster instances block to allow for unique configurations per instance.(use for each statement)
 - Restore from s3 bucket example
-- Replication example
-- parameter group example for cluster instances
+- feat: parameter group for cluster instances
 - Example IAM roles attached to cluster
 - Move values to variables.tf files in examples
+
+## [1.2.0] - 2023-10-31
+- modified the condition in which a master password is required.
+- Replication in complete example
+- An example that creates a cluster from a snapshot
+- feat: external security groups option
+- Commented out restore from s3 block since the cluster gets stuck at `Preparing-data-migration`.
 
 ## [1.1.1] - 2023-10-12
 - fix: restore to point in time dynamic block
